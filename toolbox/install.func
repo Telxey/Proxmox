@@ -5,7 +5,7 @@ variables() {
 	}
  
 
-color() {
+#color() {
  bold=`echo -en "\e[1m"`
  underline=`echo -en "\e[4m"`
  dim=`echo -en "\e[2m"`
@@ -61,7 +61,7 @@ color() {
  CROSS="${RD}✗${CL}"
  BFR="\\r\\033[K"
  HOLD="-"
-} 
+#} 
 
  CODE_SAVE_CURSOR="\033[s"
  CODE_RESTORE_CURSOR="\033[u"
