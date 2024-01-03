@@ -8,6 +8,9 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
 
 function header_info {
 clear
+echo "${dim}${white}Author: ${green}${bold}TELXEY"
+echo "$normal"
+echo "${orange}
 cat <<"EOF"
 
  ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
@@ -24,7 +27,6 @@ EOF
 }
 
 catch_errors
-setting_up_container
 network_check
 update_os
 
