@@ -6,7 +6,7 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
 # https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE
 
 
-function header_info {
+#function header_info {
 clear
 echo "${dim}${white}Author: ${green}${bold}TELXEY"
 echo "$normal"
@@ -24,7 +24,7 @@ cat <<"EOF"
 ░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
 
 EOF
-}
+#}
 
 check_root
 pve_check
