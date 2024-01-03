@@ -26,7 +26,10 @@ cat <<"EOF"
 EOF
 }
 
-catch_errors
+check_root
+pve_check
+error_handler
+#catch_errors
 network_check
 update_os
 
