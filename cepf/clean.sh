@@ -6,12 +6,11 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
 # https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE
 
 
-#function header_info {
 clear
 echo "${dim}${white}Author: ${green}${bold}TELXEY"
 echo "$normal"
 echo "${orange}
-#cat <<"EOF"
+cat <<"EOF"
 
  ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
 ▒██▀ ▀█  ▓█   ▀▓██░  ██ ▒▓██        ▒██▀ ▀█  ▓██▒    ▓█   ▀▒████▄    ██ ▀█   █  ▓█   ▀▓██ ▒ ██▒
@@ -22,9 +21,7 @@ echo "${orange}
   ░  ▒  ░ ░ ░  ░▒ ░       ░           ░  ▒  ░░ ░ ▒  ░ ░ ░  ░ ░   ▒▒ ░ ░░   ░ ▒░░ ░ ░    ░▒ ░ ▒ 
 ░           ░  ░░         ░ ░       ░          ░ ░      ░    ░   ▒     ░   ░ ░     ░    ░░   ░ 
 ░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
-#EOF
-#}
-
+EOF
 check_root
 pve_check
 error_handler
