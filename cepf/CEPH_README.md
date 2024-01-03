@@ -5,6 +5,8 @@
 
 ##  <span style='color: red;'>Ceph</span> on <span style='color: red;'>Proxmox</span>
 #### This is a customized spript to full remove Cepf from Proxmox 
+#### in case you make mistake and need to start from scrach
+
 #### Stips
 
 - Stop all Ceph services (Monitoring, Managers, OSDs, MDS) 
