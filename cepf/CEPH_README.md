@@ -10,7 +10,7 @@
 - Stop all Ceph services (Monitoring, Managers, OSDs, MDS) 
 - Remove all ceph systemd related processes
 - kill remaining backgroud ceft process
-- Removing cepf libraries
+- Removing ceph libraries
 - pveceph purge
 - remove & purge all cepg configurations
 - clean system
