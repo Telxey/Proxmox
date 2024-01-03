@@ -1,0 +1,5 @@
+#  proxmox full logo
+![proxmox-full](https://github.com/Telxey/Proxmox/assets/131807761/0bf4775a-77ed-4bf3-97a5-6af5c675f1d5)
+
+# proxmox logo
+![proxmox-logo-stacked-inverted-color](https://github.com/Telxey/Proxmox/assets/131807761/909846c0-fdbb-43b4-9ee5-0f938eed40ac)
