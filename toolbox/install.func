@@ -62,13 +62,14 @@ color() {
  BFR="\\r\\033[K"
  HOLD="-"
 } 
-# CODE_SAVE_CURSOR="\033[s"
-# CODE_RESTORE_CURSOR="\033[u"
-# CODE_CURSOR_IN_SCROLL_AREA="\033[1A"
-# COLOR_FG="\e[30m"
-# COLOR_BG="\e[42m"
-# RESTORE_FG="\e[39m"
-# RESTORE_BG="\e[49m"
+
+ CODE_SAVE_CURSOR="\033[s"
+ CODE_RESTORE_CURSOR="\033[u"
+ CODE_CURSOR_IN_SCROLL_AREA="\033[1A"
+ COLOR_FG="\e[30m"
+ COLOR_BG="\e[42m"
+ RESTORE_FG="\e[39m"
+ RESTORE_BG="\e[49m"
  
 # This function enables error handling in the script by setting options and defining a trap for the ERR signal.
 catch_errors() {
@@ -113,6 +114,44 @@ check_root() {
   fi
 }
 
+# This function checks the system architecture and exits if it's not "amd64".
+arch_check() {
+  if [ "$(dpkg --print-architecture)" != "amd64" ]; then
+    echo -e "\n ${CROSS} This script will not work with PiMox! \n"
+    echo -e "Exiting..."
+    sleep 2
+    exit
+  fi
+}
+
+# This function checks if the script is running through SSH and prompts the user to confirm if they want to proceed or exit.
+ssh_check() {
+  if command -v pveversion >/dev/null 2>&1; then
+    if [ -n "${SSH_CLIENT:+x}" ]; then
+      if whiptail --backtitle "Proxmox VE Helper Scripts" --defaultno --title "SSH DETECTED" --yesno "It's suggested to use the Proxmox shell instead of SSH, since SSH can create issues while gathering variables. Would you like to proceed with using SSH?" 10 62; then
+        echo "you've been warned"
+      else
+        clear
+        exit
+      fi
+    fi
+  fi
+}
+
+# This function checks the version of Proxmox Virtual Environment (PVE) and exits if the version is not supported.
+pve_check() {
+  if [ $(pveversion | grep "pve-manager/8" | wc -l) -ne 1 ]; then
+    whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox --title "Proxmox VE 7 Detected" "You are currently using Proxmox VE 7 (EOL 2024-07), refrain from creating Debian 12 LXCs. \nDefault distribution for $APP LXC is ${var_os} ${var_version}" 10 60
+  fi
+  if ! pveversion | grep -Eq "pve-manager/(7\.[0-9]|8\.[0-9])"; then
+    echo -e "${CROSS} This version of Proxmox Virtual Environment is not supported"
+    echo -e "Requires PVE Version 7.0 or higher"
+    echo -e "Exiting..."
+    sleep 2
+    exit
+  fi
+}
+
 # Run this spiner
 spinner=( Ooooo oOooo ooOoo oooOo ooooO );
 cat << EOF
@@ -137,6 +176,25 @@ count(){
   echo ""
 }
 
+network_check() {
+  set +e
+  trap - ERR
+  if ping -c 1 -W 1 1.1.1.1 &>/dev/null; then msg_ok "Internet Connected"; else
+    msg_error "Internet NOT Connected"
+    read -r -p "Would you like to continue anyway? <y/N> " prompt
+    if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
+      echo -e " ⚠️  ${RD}Expect Issues Without Internet${CL}"
+    else
+      echo -e " 🖧  Check Network Settings"
+      exit 1
+    fi
+  fi
+  RESOLVEDIP=$(getent hosts github.com | awk '{ print $1 }')
+  if [[ -z "$RESOLVEDIP" ]]; then msg_error "DNS Lookup Failure"; else msg_ok "DNS Resolved github.com to ${BL}$RESOLVEDIP${CL}"; fi
+  set -e
+  trap 'error_handler $LINENO "$BASH_COMMAND"' ERR
+}
+
 spin(){
   while [ 1 ]
   do
@@ -153,14 +211,6 @@ setup_scroll_area() {
     let lines=$lines-1
     # Scroll down a bit to avoid visual glitch when the screen area shrinks by one row
     echo -en "\n"
-
-    CODE_SAVE_CURSOR="\033[s"
-    CODE_RESTORE_CURSOR="\033[u"
-    CODE_CURSOR_IN_SCROLL_AREA="\033[1A"
-    COLOR_FG="\e[30m"
-    COLOR_BG="\e[42m"
-    RESTORE_FG="\e[39m"
-    RESTORE_BG="\e[49m"
 
     # Save cursor
     echo -en "$CODE_SAVE_CURSOR"
