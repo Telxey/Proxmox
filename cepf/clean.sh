@@ -201,10 +201,19 @@ systemctl stop ceph-mgr.target &> /dev/null; count
 systemctl stop ceph-mds.target &> /dev/null; count
 systemctl stop ceph-osd.target &> /dev/null; count
 msg_ok "Stoped"
-
-rm -rf /etc/systemd/system/ceph*
+msg_info "Removing systemdceph processes"
+echo "${orange}"
+rm -rf /etc/systemd/system/ceph* &> /dev/null; progress-bar 25
+msg_ok "Removed"
+msg_info "Kill Remaining Ceph process"
 killall -9 ceph-mon ceph-mgr ceph-mds
-rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/
+msg_ok "Down"
+msg_info "Removing Ceph Libraries"
+#rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/
+rm -rf /var/lib/ceph/mon/ &> echo /dev/null; "${green}" progress-bar 25 \
+ rm -rf  /var/lib/ceph/mgr/ &> /dev/null; "${red}" progress-bar 25 \
+ rm -rf /var/lib/ceph/mds/ &> /dev/null; "${ligthpurple}" progress-bar 25
+msg_ok "Removed"
 pveceph purge
 apt purge ceph-mon ceph-osd ceph-mgr ceph-mds
 apt purge ceph-base ceph-mgr-modules-core
