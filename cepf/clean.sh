@@ -193,9 +193,9 @@ pve_check
 msg_ok "Proxmox is runing"
 network_check
 msg_info "Loading Script"
-msg_ok" Script loaded"
+msg_ok "Script loaded"
 msg_info "Stoping Ceph Services"
-echo "${orange}
+echo "${orange}"
 systemctl stop ceph-mon.target &> /dev/null; count
 systemctl stop ceph-mgr.target &> /dev/null; count
 systemctl stop ceph-mds.target &> /dev/null; count
