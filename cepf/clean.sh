@@ -116,11 +116,13 @@ progress-bar() {
   clean_line
 }
 
-clear
-check_root
+
 msg_info "Cheking root"
-msg_ok "Goog to continue"
 sleep 3
+check_root
+msg_ok "Good to continue"
+sleep 3
+clear
 echo "${red}${bold}${blink}"
 cat <<"EOF" 
 
