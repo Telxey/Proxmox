@@ -30,9 +30,92 @@ source <(curl -s https://raw.githubusercontent.com/tteck/Proxmox/main/misc/build
  CROSS="${RD}✗${CL}"
  BFR="\\r\\033[K"
  HOLD="-"
- 
 
- 
+ # This function displays an informational message with a yellow color.
+msg_info() {
+  local msg="$1"
+  echo -ne " ${HOLD} ${YW}${msg}..."
+}
+
+# This function displays a success message with a green color.
+msg_ok() {
+  local msg="$1"
+  echo -e "${BFR} ${CM} ${GN}${msg}${CL}"
+}
+
+# This function displays an error message with a red color.
+msg_error() {
+  local msg="$1"
+  echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
+}
+
+# Run as root only
+check_root() {
+  if [[ "$(id -u)" -ne 0 || $(ps -o comm= -p $PPID) == "sudo" ]]; then
+    clear
+    msg_error "Please run this script as root."
+    echo -e "\nExiting..."
+    sleep 2
+    exit
+  fi
+}
+# This function checks the version of Proxmox Virtual Environment (PVE) and exits if the version is not supported.
+pve_check() {
+  if [ $(pveversion | grep "pve-manager/8" | wc -l) -ne 1 ]; then
+    whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox --title "Proxmox VE 7 Detected" "You are currently using Proxmox VE 7 (EOL 2024-07), refrain from creating Debian 12 LXCs. \nDefault distribution for $APP LXC is ${var_os} ${var_version}" 10 60
+  fi
+  if ! pveversion | grep -Eq "pve-manager/(7\.[0-9]|8\.[0-9])"; then
+    echo -e "${CROSS} This version of Proxmox Virtual Environment is not supported"
+    echo -e "Requires PVE Version 7.0 or higher"
+    echo -e "Exiting..."
+    sleep 2
+    exit
+  fi
+} 
+
+# This function is a spiner  that is setup for 10 sec you can ajust the time
+spinner=( Ooooooooo oOooooooo ooOoooooo oooOooooo ooooOoooo oooooOooo ooooooOoo oooooooOo ooooooooO);
+count(){
+  spin &
+  pid=$!
+
+  for i in `seq 1 10`
+  do
+    sleep 0.5;
+  done
+
+  kill $pid
+  echo ""
+}
+spin(){
+  while [ 1 ]
+  do
+    for i in ${spinner[@]};
+    do
+      echo -ne "\r$i";
+      sleep 0.2;
+    done;
+  done
+}
+
+# This is solid prosgres bar funtion
+progress-bar() {
+  local duration=${1}
+
+
+    already_done() { for ((done=0; done<$elapsed; done++)); do printf "▇"; done }
+    remaining() { for ((remain=$elapsed; remain<$duration; remain++)); do printf " "; done }
+    percentage() { printf "| %s%%" $(( (($elapsed)*100)/($duration)*100/100 )); }
+    clean_line() { printf "\r"; }
+
+  for (( elapsed=1; elapsed<=$duration; elapsed++ )); do
+      already_done; remaining; percentage
+      sleep 0.25
+      clean_line
+  done
+  clean_line
+}
+
 clear
 echo "${red}${bold}${blink}"
 cat <<"EOF" 
@@ -69,8 +152,7 @@ echo "${orange}Good loading script ${normal}
 count
 # 
 clear
-echo "${dim}${white}Author: ${green}${bold}TELXEY"
-echo "$normal"
+
 echo "${orange}
 cat <<"EOF"
 
@@ -85,12 +167,13 @@ cat <<"EOF"
 ░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
 
 EOF
-
+echo "${dim}${white}Author: ${green}${bold}TELXEY"
+echo "${green}Hello Today is " "${yellow} `date`${purple}"
+echo "${normal}'"
 pve_check
 error_handler
 #catch_errors
 network_check
-update_os
 
 systemctl stop ceph-mon.target
 systemctl stop ceph-mgr.target
