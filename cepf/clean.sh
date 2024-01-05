@@ -196,8 +196,11 @@ msg_ok "Script loaded"
 msg_info "Stoping Ceph Services"
 echo "${orange}"
 systemctl stop ceph-mon.target &> /dev/null; progress-bar 25
+ocho "${green}"
 systemctl stop ceph-mgr.target &> /dev/null; progress-bar 25
+echo "${red}"
 systemctl stop ceph-mds.target &> /dev/null; progress-bar 25
+echo "${white}"
 systemctl stop ceph-osd.target &> /dev/null; progress-bar 25
 msg_ok "Stoped"
 msg_info "Removing systemdceph processes"
@@ -209,15 +212,20 @@ killall -9 ceph-mon ceph-mgr ceph-mds
 msg_ok "Down"
 msg_info "Removing Ceph Libraries"
 #rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/
-rm -rf /var/lib/ceph/mon/ &> echo /dev/null; "${green}" progress-bar 25 \
- rm -rf  /var/lib/ceph/mgr/ &> /dev/null; "${red}" progress-bar 25 \
- rm -rf /var/lib/ceph/mds/ &> /dev/null; "${ligthpurple}" progress-bar 25
+rm -rf /var/lib/ceph/mon/ &/dev/null; echo "${green}" progress-bar 25 \
+ rm -rf  /var/lib/ceph/mgr/ &> /dev/null; echo "${red}" progress-bar 25 \
+ rm -rf /var/lib/ceph/mds/ &> /dev/null; echo "${ligthpurple}" progress-bar 25
 msg_ok "Removed"
-pveceph purge
-apt purge ceph-mon ceph-osd ceph-mgr ceph-mds
-apt purge ceph-base ceph-mgr-modules-core
+msg_info "Purge pveCeph"
+pveceph purge &>  /dev/null; echo "${white}" progress-bar 25 
+apt purge ceph-mon ceph-osd ceph-mgr ceph-mds &> /dev/null; echo "${red}${bold}" progress-bar 50
+apt purge ceph-base ceph-mgr-modules-core&> /dev/null; echo "${white}" progress-bar 50
+msg_ok "Purged"
+msg_info "Removing Configurations"
 rm -rf /etc/ceph/*
 rm -rf /etc/pve/ceph.conf
 rm -rf /etc/pve/priv/ceph.*
+msg_ok "OK"
+msg_ok "Process Complete"
 
 
