@@ -191,15 +191,14 @@ sleep 5
 msg_info "Checking Proxmox Instalations"
 pve_check
 msg_ok "Proxmox is runing"
-network_check
 msg_info "Loading Script"
 msg_ok "Script loaded"
 msg_info "Stoping Ceph Services"
 echo "${orange}"
-systemctl stop ceph-mon.target &> /dev/null; count
-systemctl stop ceph-mgr.target &> /dev/null; count
-systemctl stop ceph-mds.target &> /dev/null; count
-systemctl stop ceph-osd.target &> /dev/null; count
+systemctl stop ceph-mon.target &> /dev/null; progress-bar 25
+systemctl stop ceph-mgr.target &> /dev/null; progress-bar 25
+systemctl stop ceph-mds.target &> /dev/null; progress-bar 25
+systemctl stop ceph-osd.target &> /dev/null; progress-bar 25
 msg_ok "Stoped"
 msg_info "Removing systemdceph processes"
 echo "${orange}"
