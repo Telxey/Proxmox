@@ -117,6 +117,10 @@ progress-bar() {
 }
 
 clear
+check_root
+msg_info "Cheking root"
+msg_ok "Goog to continue"
+sleep 3
 echo "${red}${bold}${blink}"
 cat <<"EOF" 
 
@@ -144,7 +148,7 @@ echo "${green}For continew pree 1 ${white}${bold} or  ${red}For cancel press 2 $
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) $@; break;;
-        No ) echo "${red}Instalations canceled by root${normal}";  exit;;
+        No ) echo "${red}Instalations canceled${normal}";  exit;;
     esac
 done
 
@@ -168,17 +172,34 @@ cat <<"EOF"
 
 EOF
 echo "${dim}${white}Author: ${green}${bold}TELXEY"
-echo "${green}Hello Today is " "${yellow} `date`${purple}"
-echo "${normal}'"
-pve_check
-error_handler
-#catch_errors
-network_check
+echo "${lightyellow}Hello${green} Today is: ${lightpurple} `date` "
+echo "${normal}"
+echo "${white}${underline}"
+echo "${normal}"
+cat << EOF
+    Thank you for trying this script out.
+        I will now wait 10 seconds,
 
-systemctl stop ceph-mon.target
-systemctl stop ceph-mgr.target
-systemctl stop ceph-mds.target
-systemctl stop ceph-osd.target
+EOF
+sleep 5
+echo "${green}            Start Cleaning ${orange}Ceph"
+echo "${normal}"
+sleep 5
+
+msg_info "Checking Proxmox Instalations"
+pve_check
+msg_ok "Proxmox is runing"
+network_check
+msg_info "Loading Script"
+msg_ok" Script loaded"
+msg_info "Stoping Ceph Services"
+echo "${orange}
+systemctl stop ceph-mon.target &> /dev/null; count
+systemctl stop ceph-mgr.target &> /dev/null; count
+systemctl stop ceph-mds.target &> /dev/null; count
+systemctl stop ceph-osd.target &> /dev/null; count
+msg_ok "Stoped"
+
 rm -rf /etc/systemd/system/ceph*
 killall -9 ceph-mon ceph-mgr ceph-mds
 rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/
