@@ -120,7 +120,7 @@ progress-bar() {
 msg_info "Cheking root"
 sleep 3
 check_root
-msg_ok "Good to continue"
+msg_ok "Good to GO ..."
 sleep 3
 clear
 echo "${red}${bold}${blink}"
@@ -203,7 +203,7 @@ systemctl stop ceph-mds.target &> /dev/null; progress-bar 25
 echo "${white}"
 systemctl stop ceph-osd.target &> /dev/null; progress-bar 25
 msg_ok "Stoped"
-msg_info "Removing systemdceph processes"
+msg_info "Removing systemd ceph processes"
 echo "${orange}"
 rm -rf /etc/systemd/system/ceph* &> /dev/null; progress-bar 25
 msg_ok "Removed"
@@ -212,7 +212,7 @@ killall -9 ceph-mon ceph-mgr ceph-mds
 msg_ok "Down"
 msg_info "Removing Ceph Libraries"
 echo "${red}"${bold}"
-rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/ &/dev/null; progress-bar 50
+rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/ ; progress-bar 50
 msg_ok "Removed"
 msg_info "Purge pveCeph"
 echo "${green}"
