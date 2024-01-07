@@ -218,7 +218,7 @@ msg_info "Purge pveCeph"
 echo "${green}"
 pveceph purge &>  /dev/null; progress-bar 25 
 apt purge ceph-mon ceph-osd ceph-mgr ceph-mds &> /dev/null;  progress-bar 50
-apt purge ceph-base ceph-mgr-modules-core&> /dev/null; progress-bar 50
+apt purge ceph-base ceph-mgr-modules-core &> /dev/null; progress-bar 50
 msg_ok "Purged"
 msg_info "Removing Configurations"
 rm -rf /etc/ceph/*
