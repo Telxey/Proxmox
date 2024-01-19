@@ -48,6 +48,7 @@ echo -e "${BLD}${OR}"
 
 EOF
 echo "${CL}"
+}
 echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${YW}Hello${GRN} Today is: ${OR} `date` "
 echo "${CL}"
@@ -57,8 +58,6 @@ cat << EOF
         I will now wait 10 seconds,
 
 EOF
-echo "${CL}"
-}
 echo "${CL}"
 start_routines() {
   header_info
