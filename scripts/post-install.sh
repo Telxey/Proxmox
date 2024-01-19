@@ -47,7 +47,6 @@ msg_head() {
   echo -e "${BLD} ${OR}${msg}${CL}"
 }
 
-echo -e "${BLD}${OR}"
 header_info() {
   clear
   cat <<"EOF"
