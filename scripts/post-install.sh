@@ -4,6 +4,7 @@
 # Author: Telxey ( Rax )
 # License: MIT
 # https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE
+
 WT=$(echo "\033[97m")
 OR=$(echo "\033[38;5;208m")
 RD=$(echo "\033[01;31m")
@@ -49,14 +50,14 @@ echo -e "${BLD}${OR}"
 EOF
 echo "${CL}"
 }
+
 echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${YW}Hello${GRN} Today is: ${OR} `date` "
 echo "${CL}"
 echo "${WT}"
-cat << EOF
+cat << "EOF"
     Thank you for trying this script out.
         I will now wait 10 seconds,
-
 EOF
 echo "${CL}"
 start_routines() {
