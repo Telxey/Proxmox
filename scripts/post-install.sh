@@ -46,8 +46,18 @@ echo -e "${BLD}${OR}"
 
 EOF
 echo "${CL}"
-}
+echo "${dim}${white}Author: ${green}${bold}TELXEY"
+echo "${lightyellow}Hello${green} Today is: ${lightpurple} `date` "
+echo "${CL}"
+echo "${white}"
+cat << EOF
+    Thank you for trying this script out.
+        I will now wait 10 seconds,
 
+EOF
+echo "${CL}"
+}
+echo "${CL}"
 start_routines() {
   header_info
   VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
