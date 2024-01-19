@@ -47,9 +47,9 @@ msg_head() {
   echo -e "${BLD} ${OR}${msg}${CL}"
 }
 
+echo -e "${BLD}${OR}"
+header_info() {
   clear
-  #echo -e "${BLD}${OR}"
-
   cat <<"EOF"
     ____ _    ________   ____             __     ____           __        ____
    / __ \ |  / / ____/  / __ \____  _____/ /_   /  _/___  _____/ /_____ _/ / /
@@ -58,26 +58,8 @@ msg_head() {
 /_/     |___/_____/  /_/    \____/____/\__/  /___/_/ /_/____/\__/\__,_/_/_/
 
 EOF
+}
 echo "${CL}"
-
-
-echo -e "\nThis script will Perform Post Install Routines.\n"
-while true; do
-  read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
-  case $yn in
-  [Yy]*) break ;;
-  [Nn]*) clear; exit ;;
-  *) echo "Please answer yes or no." ;;
-  esac
-done
-
-if ! command -v pveversion >/dev/null 2>&1; then
-  header_info
-  msg_error "\n No PVE Detected!\n"
-  exit
-fi
-
-start_routines
 
 start_routines() {
   VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
@@ -261,5 +243,24 @@ cat << "EOF"
 EOF
 echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${CL}"
+
+header_info
+echo -e "\nThis script will Perform Post Install Routines.\n"
+while true; do
+  read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
+  case $yn in
+  [Yy]*) break ;;
+  [Nn]*) clear; exit ;;
+  *) echo "Please answer yes or no." ;;
+  esac
+done
+
+if ! command -v pveversion >/dev/null 2>&1; then
+  header_info
+  msg_error "\n No PVE Detected!\n"
+  exit
+fi
+
+start_routines
 
 
