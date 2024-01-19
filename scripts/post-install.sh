@@ -22,6 +22,11 @@ CROSS="${RD}✗${CL}"
 set -euo pipefail
 shopt -s inherit_errexit nullglob
 
+msg_clear() {
+  local msg="$1"
+  echo -ne " ${CL}${msg}..."
+}
+
 msg_info() {
   local msg="$1"
   echo -ne " ${HOLD} ${YW}${msg}..."
@@ -48,6 +53,7 @@ echo -e "${BLD}${OR}"
 /_/     |___/_____/  /_/    \____/____/\__/  /___/_/ /_/____/\__/\__,_/_/_/
 
 EOF
+msg_clear
 }
 
 start_routines() {
@@ -235,7 +241,7 @@ echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${CL}"
 
 header_info
-echo "${CL}"
+msg_clear
 echo -e "\nThis script will Perform Post Install Routines.\n"
 while true; do
   read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
