@@ -4,12 +4,14 @@
 # Author: Telxey ( Rax )
 # License: MIT
 # https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE
-
+WT=$(echo "\033[97m")
 OR=$(echo "\033[38;5;208m")
 RD=$(echo "\033[01;31m")
 YW=$(echo "\033[33m")
 GN=$(echo "\033[1;92m")
+GRN=$(echo "\033[32m")
 CL=$(echo "\033[m")
+DM=$(echo "\e[2m")
 BLD=$(echo "\033[1m")
 BFR="\\r\\033[K"
 HOLD="-"
@@ -46,10 +48,10 @@ echo -e "${BLD}${OR}"
 
 EOF
 echo "${CL}"
-echo "${dim}${white}Author: ${green}${bold}TELXEY"
-echo "${lightyellow}Hello${green} Today is: ${lightpurple} `date` "
+echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
+echo "${YW}Hello${GRN} Today is: ${OR} `date` "
 echo "${CL}"
-echo "${white}"
+echo "${WT}"
 cat << EOF
     Thank you for trying this script out.
         I will now wait 10 seconds,
