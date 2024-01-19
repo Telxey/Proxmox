@@ -48,9 +48,8 @@ echo -e "${BLD}${OR}"
 /_/     |___/_____/  /_/    \____/____/\__/  /___/_/ /_/____/\__/\__,_/_/_/
 
 EOF
-echo "${CL}"
 }
-
+echo "${CL}"
 echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${YW}Hello${GRN} Today is: ${OR} `date` "
 echo "${CL}"
