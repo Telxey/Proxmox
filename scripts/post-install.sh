@@ -47,23 +47,39 @@ msg_head() {
   echo -e "${BLD} ${OR}${msg}${CL}"
 }
 
-header_info() {
   clear
   #echo -e "${BLD}${OR}"
-  msg_head
-  "cat <<"EOF"
+
+  cat <<"EOF"
     ____ _    ________   ____             __     ____           __        ____
    / __ \ |  / / ____/  / __ \____  _____/ /_   /  _/___  _____/ /_____ _/ / /
   / /_/ / | / / __/    / /_/ / __ \/ ___/ __/   / // __ \/ ___/ __/ __ `/ / /
  / ____/| |/ / /___   / ____/ /_/ (__  ) /_   _/ // / / (__  ) /_/ /_/ / / /
 /_/     |___/_____/  /_/    \____/____/\__/  /___/_/ /_/____/\__/\__,_/_/_/
 
-EOF"
-msg_clear
-}
+EOF
+echo "${CL}"
+
+
+echo -e "\nThis script will Perform Post Install Routines.\n"
+while true; do
+  read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
+  case $yn in
+  [Yy]*) break ;;
+  [Nn]*) clear; exit ;;
+  *) echo "Please answer yes or no." ;;
+  esac
+done
+
+if ! command -v pveversion >/dev/null 2>&1; then
+  header_info
+  msg_error "\n No PVE Detected!\n"
+  exit
+fi
+
+start_routines
 
 start_routines() {
-  header_info
   VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
 
   CHOICE=$(whiptail --backtitle "Proxmox Scripts" --title "SOURCES" --menu "The package manager will use the correct sources to update and install packages on your Proxmox VE server.\n \nCorrect Proxmox VE sources?" 14 58 2 \
@@ -246,22 +262,4 @@ EOF
 echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${CL}"
 
-header_info
-msg_clear
-echo -e "\nThis script will Perform Post Install Routines.\n"
-while true; do
-  read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
-  case $yn in
-  [Yy]*) break ;;
-  [Nn]*) clear; exit ;;
-  *) echo "Please answer yes or no." ;;
-  esac
-done
 
-if ! command -v pveversion >/dev/null 2>&1; then
-  header_info
-  msg_error "\n No PVE Detected!\n"
-  exit
-fi
-
-start_routines
