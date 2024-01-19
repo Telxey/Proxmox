@@ -225,17 +225,16 @@ EOF
     ;;
   esac
 }
-
-header_info
-echo "${CL}"
-echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
-echo "${YW}Hello${GRN} Today is: ${OR} `date` "
+echo "${YW}Hello${GRN} Today is: ${OR} `date` `time` "
 echo "${CL}"
 echo "${WT}"
 cat << "EOF"
     Thank you for trying this script out.
-        I will now wait 10 seconds,
 EOF
+echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
+echo "${CL}"
+
+header_info
 echo "${CL}"
 echo -e "\nThis script will Perform Post Install Routines.\n"
 while true; do
