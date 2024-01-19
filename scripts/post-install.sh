@@ -24,7 +24,7 @@ shopt -s inherit_errexit nullglob
 
 msg_clear() {
   local msg="$1"
-  echo -ne " ${CL}${msg}..."
+  echo -ne " ${CL}${msg}${CL}"
 }
 
 msg_info() {
@@ -42,9 +42,15 @@ msg_error() {
   echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
 }
 
+msg_head() {
+  local msg="$1"
+  echo -e "${BLD} ${OR}${msg}${CL}"
+}
+
 header_info() {
   clear
-echo -e "${BLD}${OR}"
+  #echo -e "${BLD}${OR}"
+  msg_head
   cat <<"EOF"
     ____ _    ________   ____             __     ____           __        ____
    / __ \ |  / / ____/  / __ \____  _____/ /_   /  _/___  _____/ /_____ _/ / /
