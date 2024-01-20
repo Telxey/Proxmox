@@ -29,19 +29,24 @@ check_root() {
   fi
 }
 
-function header_info {
+#function header_info {
   clear
+ echo -e "${BLD}${GRN}"
   cat <<"EOF"
     ░▒█░▄▀░█▀▀░█▀▀▄░█▀▀▄░█▀▀░█░░░░▒█▀▀▄░█░░█▀▀░█▀▀▄░█▀▀▄
     ░▒█▀▄░░█▀▀░█▄▄▀░█░▒█░█▀▀░█░░░░▒█░░░░█░░█▀▀░█▄▄█░█░▒█
     ░▒█░▒█░▀▀▀░▀░▀▀░▀░░▀░▀▀▀░▀▀░░░▒█▄▄▀░▀▀░▀▀▀░▀░░▀░▀░░▀
 
 EOF
+echo -e "${CL}${YW}Hello${GN} Today is: ${WT} `date` `time` ${CL}"
 }
+
 
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
-header_info
+
+
+#header_info
 
 function msg_info() {
   local msg="$1"
