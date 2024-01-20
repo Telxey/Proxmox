@@ -237,7 +237,6 @@ EOF
 
 
 header_info
-echo -e "${YW}Hellow${GRN} Today is: ${OR} date time${CL}
 echo -e "${GRN}This script will Perform Post Install Routines.${CL}"
 while true; do
   read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
