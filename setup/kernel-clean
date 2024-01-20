@@ -6,7 +6,7 @@
 # https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE
 
 WT=$(echo "\033[97m")
-LBL=(echo "\033[38;5;33m")
+LBL=$(echo "\033[38;5;33m")
 OR=$(echo "\033[38;5;208m")
 RD=$(echo "\033[01;31m")
 YW=$(echo "\033[33m")
@@ -51,7 +51,7 @@ function msg_ok() {
 
 EOF
 
-echo -e "${CL}${DM}${WT}Author: ${LBL}${BLD}( Rax ) ${CL}${DM}${RD}From ${GN}${BLD}TELXEY${CL}"
+echo -e "${CL}${DM}${WT}Author: ${WT}( ${LBL}${BLD}Rax${WT} ) ${CL}${DM}${RD}From ${GN}${BLD}TELXEY"
 echo -e "${YW}Hello${GN} Today is: ${WT} `date` "
 echo -e "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
 echo -e "${WT}For continue press ${GN}${BLD}1 ${WT}${BLD} or  ${WT}For cancel press ${RD}${BLD} 2 ${CL}"
