@@ -232,7 +232,6 @@ EOF
     msg_error "Selected no to Rebooting Proxmox VE (Reboot recommended)"
     msg_ok "Completed Post Install Routines"
     ;;
-    echo "${YW}Hello${GRN} Today is: ${OR} date time ${CL}"
     echo "${WT}"
     cat << "EOF"
           Thank you for trying this script out.
