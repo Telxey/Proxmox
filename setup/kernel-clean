@@ -59,13 +59,13 @@ function header_info {
     ░▒█░▒█░▀▀▀░▀░▀▀░▀░░▀░▀▀▀░▀▀░░░▒█▄▄▀░▀▀░▀▀▀░▀░░▀░▀░░▀
 
 
-EOF
-echo -e "${YW}Hello${GN} Today is: ${OR} `date` ${WT}`time`"
-echo -e "${DM}${WT}Author: ${GN}${BLD}TELXEY"
+EOF  
+echo -e "${CL}${YW}Hello${GN} Today is: ${OR} `date` ${CL}${WT}`time`"
+echo -e "${DM}Author: ${GN}${BLD}TELXEY"
 sleep 5
 
 echo -e "${CL}"
-echo -e "${RD}${BLD}"
+echo -e "${WT}${BLD}"
 cat <<"EOF"
 
       This is Proxmox script kernels cleaner 
@@ -74,8 +74,8 @@ cat <<"EOF"
 
 EOF
 echo -e "${CL}"
-echo -e "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
-echo -e "${GN}For continew pree 1 ${WT}${BLD} or  ${RD}For cancel press 2 ${CL}"
+echo -e "${YW}${BLD}Do you wish to continue removing olds Kernels ?"
+echo -e "${WT}For continew press ${GN} 1 ${WT}${BLD} or  ${WT}For cancel press ${RD} 2 ${CL}"
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) $@; break;;
