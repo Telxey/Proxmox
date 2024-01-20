@@ -244,7 +244,7 @@ echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${CL}"
 
 header_info
-echo -e "${YW}Hello${GRN} Today is: ${OR} date time${CL}
+echo -e "${YW}Hellow${GRN} Today is: ${OR} date time${CL}
 echo -e "${GRN}This script will Perform Post Install Routines.${CL}"
 while true; do
   read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
