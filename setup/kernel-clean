@@ -59,6 +59,10 @@ function header_info {
 
 EOF 
 }
+
+current_kernel=$(uname -r)
+available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
+header_info
 echo -e "${CL}${YW}Hello${GN} Today is: ${OR} `date` ${CL}${WT}`time`"
 echo -e "${DM}Author: ${GN}${BLD}TELXEY"
 sleep 5
