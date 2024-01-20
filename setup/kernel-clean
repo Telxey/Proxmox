@@ -29,9 +29,9 @@ check_root() {
   fi
 }
 
-
+function header_info {
   clear
- echo -e "${BLD}${GRN}"
+  echo -e "${BLD}${GRN}"
   cat <<"EOF"
 
 
@@ -42,6 +42,8 @@ check_root() {
 EOF
 
 echo -e "${YW}Hello${GN} Today is: ${WT} `date` `time` ${CL}"
+sleep 5
+}
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
 
