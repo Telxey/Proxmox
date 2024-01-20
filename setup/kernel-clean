@@ -41,7 +41,7 @@ check_root() {
 EOF
 
 echo -e "${YW}Hello${GN} Today is: ${WT} `date` `time` ${CL}"
-echo -e "${DM}Author: ${WT}(${RD} Rax ${CL${WT}) ${GN}${BLD}TELXEY${CL}"
+echo -e "${DM}Author: ${GN}${BLD}TELXEY${CL}"
 echo -e "${CL}"
 echo -e "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
 echo -e "${WT}For continew press ${GN}${BLD}1 ${WT}${BLD} or  ${WT}For cancel press ${RD}${BLD} 2 ${CL}"
