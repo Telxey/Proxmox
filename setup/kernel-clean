@@ -47,7 +47,7 @@ msg_error() {
   echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
 }
 
-
+function header_info {
   clear
   echo -e "${BLD}${GRN}"
   cat <<"EOF"
@@ -88,10 +88,10 @@ sleep 3
 check_root
 msg_ok "Good to GO ..." | sleep 3
 sleep 3
-
+}
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
-
+header_info
 
 whiptail --backtitle "Proxmox Scripts" --title "Proxmox Kernel Clean" --yesno "This will Clean Unused Kernel Images, USE AT YOUR OWN RISK. Proceed?" 10 68 || exit
 if [ -z "$available_kernels" ]; then
