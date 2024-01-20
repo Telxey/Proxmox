@@ -51,7 +51,7 @@ function msg_ok() {
 
 EOF
 
-echo -e "${CL}${DM}${WT}Author: ${WT}( ${LBL}Rax ${WT}) ${CL}${DM}${RD}From ${GN}${BLD}TELXEY${CL}"
+echo -e "${CL}${DM}${WT}Author: ${CL}${WT}( ${RD}Rax ${WT}) ${CL}${DM}${RD}From ${GN}${BLD}TELXEY${CL}"
 echo -e "${YW}Hello${GN} Today is: ${WT} `date` "
 echo -e "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
 echo -e "${WT}For continue press ${GN}${BLD}1 ${WT}${BLD} or  ${WT}For cancel press ${RD}${BLD} 2 ${CL}"
