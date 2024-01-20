@@ -232,13 +232,6 @@ EOF
     msg_error "Selected no to Rebooting Proxmox VE (Reboot recommended)"
     msg_ok "Completed Post Install Routines"
     ;;
-    echo "${WT}"
-    cat << "EOF"
-          Thank you for trying this script out.
-   EOF
-   echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
-   echo "${CL}"
-    ;;
   esac
 }
 
@@ -251,6 +244,7 @@ echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${CL}"
 
 header_info
+echo -e "${YW}Hello${GRN} Today is: ${OR} date time${CL}
 echo -e "${GRN}This script will Perform Post Install Routines.${CL}"
 while true; do
   read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
