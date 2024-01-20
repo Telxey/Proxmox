@@ -29,16 +29,17 @@ check_root() {
   fi
 }
 
-function header_info {
+
   clear
  echo -e "${BLD}${GRN}"
   cat <<"EOF"
+
+
     ░▒█░▄▀░█▀▀░█▀▀▄░█▀▀▄░█▀▀░█░░░░▒█▀▀▄░█░░█▀▀░█▀▀▄░█▀▀▄
     ░▒█▀▄░░█▀▀░█▄▄▀░█░▒█░█▀▀░█░░░░▒█░░░░█░░█▀▀░█▄▄█░█░▒█
     ░▒█░▒█░▀▀▀░▀░▀▀░▀░░▀░▀▀▀░▀▀░░░▒█▄▄▀░▀▀░▀▀▀░▀░░▀░▀░░▀
 
 EOF
-}
 
 echo -e "${YW}Hello${GN} Today is: ${WT} `date` `time` ${CL}"
 current_kernel=$(uname -r)
