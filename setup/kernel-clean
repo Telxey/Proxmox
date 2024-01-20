@@ -29,7 +29,6 @@ check_root() {
   fi
 }
 
-function header_info {
   clear
   echo -e "${BLD}${GRN}"
   cat <<"EOF"
@@ -42,8 +41,17 @@ function header_info {
 EOF
 
 echo -e "${YW}Hello${GN} Today is: ${WT} `date` `time` ${CL}"
-sleep 5
-}
+echo -e "${DM}Author: ${WT}(${RD} Rax ${CL${WT}) ${GN}${BLD}TELXEY${CL}"
+echo -e "${CL}"
+echo -e "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
+echo -e "${WT}For continew press ${GN}${BLD}1 ${WT}${BLD} or  ${WT}For cancel press ${RD}${BLD} 2 ${CL}"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) $@; break;;
+        No ) echo "${RD}Kernel Cleaner Canceled${CL}";  exit;;
+    esac
+done
+
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
 
