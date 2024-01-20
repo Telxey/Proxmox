@@ -60,7 +60,7 @@ msg_error() {
 
 
 EOF
-echo "${YW}Hello${GN} Today is: ${OR} `date` `time`"
+echo "${YW}Hello${GN} Today is: ${OR} `date` ${WT}`time`"
 echo "${DM}${WT}Author: ${GN}${BLD}TELXEY"
 sleep 5
 
@@ -71,6 +71,7 @@ cat <<"EOF"
       This is Proxmox script kernels cleaner 
     Script intented to  remove all unused kernels 
             images for  optimize system
+
 EOF
 echo "${CL}"
 echo "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
@@ -78,7 +79,7 @@ echo "${GN}For continew pree 1 ${WT}${BLD} or  ${RD}For cancel press 2 ${CL}"
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) $@; break;;
-        No ) echo "${RD}Instalations canceled${CL}";  exit;;
+        No ) echo "${RD}Kernel Cleaner Canceled${CL}";  exit;;
     esac
 done
 
