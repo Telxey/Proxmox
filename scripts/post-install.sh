@@ -49,16 +49,16 @@ msg_head() {
 
 header_info() {
   clear
-  echo "${BLD}${OR}"
-cat <<"EOF"
+  echo -e "${BLD}${OR}"
+  cat <<"EOF"
     ____ _    ________   ____             __     ____           __        ____
    / __ \ |  / / ____/  / __ \____  _____/ /_   /  _/___  _____/ /_____ _/ / /
   / /_/ / | / / __/    / /_/ / __ \/ ___/ __/   / // __ \/ ___/ __/ __ `/ / /
  / ____/| |/ / /___   / ____/ /_/ (__  ) /_   _/ // / / (__  ) /_/ /_/ / / /
 /_/     |___/_____/  /_/    \____/____/\__/  /___/_/ /_/____/\__/\__,_/_/_/
+
 EOF
 }
-echo "${CL}"
 
 start_routines() {
   VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
@@ -244,10 +244,7 @@ echo "${DM}${WT}Author: ${GRN}${BLD}TELXEY"
 echo "${CL}"
 
 header_info
-cat << "EOF"
-    Thank you for trying this Proxmox Script.
-EOF
-echo -e "\nThis script will Perform Post Install Routines.\n"
+echo -e "${GRN}This script will Perform Post Install Routines.${CL}"
 while true; do
   read -p "Start the Proxmox VE Post Install Script (y/n)?" yn
   case $yn in
