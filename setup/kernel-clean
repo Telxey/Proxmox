@@ -20,6 +20,18 @@ CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 
 
+# Run as root only
+check_root() {
+  if [[ "$(id -u)" -ne 0 || $(ps -o comm= -p $PPID) == "sudo" ]]; then
+    clear
+    msg_error "Please run this script as root."
+    echo -e "\nExiting..."
+    sleep 2
+    exit
+  fi
+}
+
+
 msg_info() {
   local msg="$1"
   echo -ne " ${HOLD} ${YW}${msg}..."
@@ -35,9 +47,9 @@ msg_error() {
   echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
 }
 
-header_info() {
+
   clear
-  echo -e "${BLD}${RD}"
+  echo -e "${BLD}${GRN}"
   cat <<"EOF"
 
 
@@ -48,10 +60,32 @@ header_info() {
 
 
 EOF
-}
-echo "${dim}${white}Author: ${green}${bold}TELXEY"
-echo "${lightyellow}Hello${green} Today is: ${lightpurple} `date` `time`"
+echo "${YW}Hello${GN} Today is: ${OR} `date` `time`"
+echo "${DM}${WT}Author: ${GN}${BLD}TELXEY"
 
+echo "${CL}"
+echo "${RD}${BLD}"
+cat <<"EOF"
+
+      This is Proxmox script kernels cleaner 
+    Script intented to  remove all unused kernels 
+             for  optimize system
+EOF
+echo "${CL}"
+echo "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
+echo "${GN}For continew pree 1 ${WT}${BLD} or  ${RD}For cancel press 2 ${CL}"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) $@; break;;
+        No ) echo "${red}Instalations canceled${normal}";  exit;;
+    esac
+done
+
+msg_info "Cheking root"
+sleep 3
+check_root
+msg_ok "Good to GO ..."
+sleep 3
 
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
