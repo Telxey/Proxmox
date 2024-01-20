@@ -69,7 +69,7 @@ cat <<"EOF"
 
       This is Proxmox script kernels cleaner 
     Script intented to  remove all unused kernels 
-             for  optimize system
+            images for  optimize system
 EOF
 echo "${CL}"
 echo "${OR}${BLD}Do you wish to continue removing olds Kernels ?"
@@ -77,7 +77,7 @@ echo "${GN}For continew pree 1 ${WT}${BLD} or  ${RD}For cancel press 2 ${CL}"
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) $@; break;;
-        No ) echo "${red}Instalations canceled${normal}";  exit;;
+        No ) echo "${RD}Instalations canceled${CL}";  exit;;
     esac
 done
 
@@ -89,10 +89,9 @@ sleep 3
 
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
-header_info
 
 
-whiptail --backtitle "Proxmox VE Helper Scripts" --title "Proxmox VE Kernel Clean" --yesno "This will Clean Unused Kernel Images, USE AT YOUR OWN RISK. Proceed?" 10 68 || exit
+whiptail --backtitle "Proxmox Scripts" --title "Proxmox Kernel Clean" --yesno "This will Clean Unused Kernel Images, USE AT YOUR OWN RISK. Proceed?" 10 68 || exit
 if [ -z "$available_kernels" ]; then
   whiptail --backtitle "Proxmox VE Helper Scripts" --title "No Old Kernels" --msgbox "It appears there are no old Kernels on your system. \nCurrent kernel ($current_kernel)." 10 68
   echo "Exiting..."
