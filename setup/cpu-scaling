@@ -98,3 +98,5 @@ case $CHOICE in
     ;;
 esac
 echo -e "Current CPU Scaling Governor is set to \033[36m$current_governor\033[m\n"
+msg_ok "Crontab ready Set"
+msg_ok "Installed $CPU Scaling Governor"
