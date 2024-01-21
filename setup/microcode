@@ -69,9 +69,12 @@ echo -e "${WT}For continue press --> ${GN}${BLD} 1 ${WT}${BLD} or  ${WT}For canc
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) $@; break;;
-        No ) echo -e "${RD}Kernel Cleaner Canceled${CL}";  exit;;
+        No ) echo -e "${RD}Prossesor Microcode Instalation Canceled${CL}";  exit;;
     esac
 done
+
+check_root
+
 current_microcode=$(journalctl -k | grep -oP "microcode: updated early: [^ ]+ -> \K[^,]+, date = [^ ]+" | head -n 1)
 [ -z "$current_microcode" ] && current_microcode="Not found."
 
