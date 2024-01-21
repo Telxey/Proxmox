@@ -68,6 +68,19 @@ The CPU scaling governor determines how the CPU frequency is adjusted based on t
 
     bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/cpu-scaling)"    
 
+   
+<h2 align="center">
+  $${\color{darkorange}Proxmox \space VE \space \color{gray} - \space \color{green}Netdata.}$$
+</h2>
+<p align="center">
+<p><a href="https://www.netdata.cloud">Netdata</a> is an open-source, real-time performance monitoring tool designed to provide insights into the performance and health of systems and applications. It is often used by system administrators, DevOps professionals, and developers to monitor and troubleshoot issues on servers and other devices.
+</p>   
+   Run the command below in the Proxmox VE Shell.
+
+    bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/netdata)"    
+
+    
+
 
  ---
  <h3 align="right">Support:</h3>
