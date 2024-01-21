@@ -17,7 +17,7 @@ This script provides options for managing Proxmox VE repositories, including dis
 </p>
 Run the command below in the Proxmox VE Shell.
 
-      bash -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/post-install)"
+    bash -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/post-install)"
 
 <h2 align="center">
   $${\color{darkorange}Proxmox \space VE \space \color{gray} - \space \color{red}Kernel \space Clean}$$
@@ -29,7 +29,7 @@ Cleaning unused kernel images is beneficial for reducing the length of the GRUB 
 </p>
 Run the command below in the Proxmox VE Shell.
 
-      bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/kernel-clean)"
+    bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/kernel-clean)"
 
 
 <h2 align="center">
@@ -45,7 +45,7 @@ Cleaning unused kernel images is beneficial for reducing the length of the GRUB 
 </p>
 Run the command below in the Proxmox VE Shell.
 
-      bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/microcode)"
+    bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/microcode)"
 
 <p align="center">
 After a reboot, you can check whether any microcode updates are currently in effect by running the following command.
@@ -66,7 +66,7 @@ The CPU scaling governor determines how the CPU frequency is adjusted based on t
 </h3>
    Run the command below in the Proxmox VE Shell.
 
-      bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/cpu-scaling)"    
+    bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/cpu-scaling)"    
 
 
  ---
