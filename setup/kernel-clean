@@ -62,12 +62,6 @@ select yn in "Yes" "No"; do
     esac
 done
 
-msg_info "Cheking root"
-sleep 3
-check_root
-msg_ok "Good to GO ..."
-sleep 3
-
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
 
