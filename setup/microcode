@@ -59,9 +59,17 @@ function header_info {
 EOF
 }
 
-
-
 header_info
+echo -e "${CL}${DM}${WT}Author:${CL} ${WT}(${LBL}${BLD}Rax${WT}) ${CL}${DM}${WT}From ${GN}${BLD}TELXEY"
+echo -e "${GN} Today is: ${WT} `date` "
+echo -e "${OR}${BLD}Do you wish to continue install Prossesor Microcode${CL}${GN}${BLD} ?${CL}"
+echo -e "${WT}For continue press --> ${GN}${BLD} 1 ${WT}${BLD} or  ${WT}For cancel press --> ${RD}${BLD} 2 ${CL}"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) $@; break;;
+        No ) echo -e "${RD}Kernel Cleaner Canceled${CL}";  exit;;
+    esac
+done
 current_microcode=$(journalctl -k | grep -oP "microcode: updated early: [^ ]+ -> \K[^,]+, date = [^ ]+" | head -n 1)
 [ -z "$current_microcode" ] && current_microcode="Not found."
 
@@ -108,7 +116,7 @@ intel() {
 amd() {
   amd_microcode=$(curl -fsSL "https://ftp.debian.org/debian/pool/non-free-firmware/a/amd64-microcode///" | grep -o 'href="[^"]*amd64.deb"' | sed 's/href="//;s/"//')
 
-  [ -z "$amd_microcode" ] && { whiptail --backtitle "Proxmox VE Helper Scripts" --title "No Microcode Found" --msgbox "It appears there were no microcode packages found\n Try again later." 10 68; msg_info "Exiting"; sleep 1; msg_ok "Done"; exit; }
+  [ -z "$amd_microcode" ] && { whiptail --backtitle "Proxmox Scripts" --title "No Microcode Found" --msgbox "It appears there were no microcode packages found\n Try again later." 10 68; msg_info "Exiting"; sleep 1; msg_ok "Done"; exit; }
 
   MICROCODE_MENU=()
   MSG_MAX_LENGTH=0
@@ -119,7 +127,7 @@ amd() {
     MICROCODE_MENU+=("$TAG" "$ITEM " "OFF")
   done < <(echo "$amd_microcode")
 
-  microcode=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "Current Microcode revision:${current_microcode}" --radiolist "\nSelect a microcode package to install:\n" 16 $((MSG_MAX_LENGTH + 58)) 6 "${MICROCODE_MENU[@]}" 3>&1 1>&2 2>&3 | tr -d '"') || exit
+  microcode=$(whiptail --backtitle "Proxmox Scripts" --title "Current Microcode revision:${current_microcode}" --radiolist "\nSelect a microcode package to install:\n" 16 $((MSG_MAX_LENGTH + 58)) 6 "${MICROCODE_MENU[@]}" 3>&1 1>&2 2>&3 | tr -d '"') || exit
 
   [ -z "$microcode" ] && { whiptail --backtitle "Proxmox VE Helper Scripts" --title "No Microcode Selected" --msgbox "It appears that no microcode packages were selected" 10 68; msg_info "Exiting"; sleep 1; msg_ok "Done"; exit; }
 
