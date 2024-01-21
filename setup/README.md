@@ -62,10 +62,9 @@ After a reboot, you can check whether any microcode updates are currently in eff
 The CPU scaling governor determines how the CPU frequency is adjusted based on the workload, with the goal of either conserving power or improving performance. By scaling the frequency up or down, the operating system can optimize the CPU usage and conserve energy when possible. For more info click below
 </p>   
 <h3 align="center">
-<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/pm/cpufreq.html?#generic-scaling-governors">Generic Scaling Governors</a></p><br><br>
+<p><a href="https://www.kernel.org/doc/html/latest/admin-guide/pm/cpufreq.html?#generic-scaling-governors">CPU Scaling Governors Performance Documentation</a></p><br><br>
 </h3>
-   
-Run the command below in the Proxmox VE Shell.
+   Run the command below in the Proxmox VE Shell.
 
       bash -c "$(wget -qLO  - https://raw.githubusercontent.com/Telxey/Proxmox/main/setup/cpu-scaling)"    
 
