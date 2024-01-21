@@ -13,7 +13,7 @@ there is a few additional tweaks that can be enabled using the script. These are
 ## Installation
 Run the following commands in your PVE instance:
 ```bash
-git clone https://github.com/Happyrobot33/PVEThemes
+git clone https://github.com/Telxey/Proxmox/tree/main/themes/PVEthemes
 cd PVEThemes
 chmod +x install.sh
 ./install.sh
@@ -21,15 +21,49 @@ chmod +x install.sh
 
 Or this one-liner:
 ```bash
-git clone https://github.com/Happyrobot33/PVEThemes && cd PVEThemes && chmod +x install.sh && ./install.sh
+git clone https://github.com/Telxey/Proxmox/tree/main/themes/PVEthemes && cd PVEThemes && chmod +x install.sh && ./install.sh
 ```
 
 if you have ran the install.sh script before, you can instead just directly run the python script
-```bash
-python3 PVEThemes.py
-```
 
+    python3 PVEThemes.py
+
+
+##  Proxmox  Theme's Below                                         
+
+---
+<p align="right">
+   <a href="https://www.buymeacoffee.com/telxey" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+</p>
+
+<h2 align="center">
+   $${\color{aqua}Avali \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
+</h2>
+  
 ![avali](./themes/previews/theme-avali.png)
+
+
+<h2 align="center">
+   $${\color{aqua}Discord \space Dark \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
+</h2>
+
 ![discord dark](./themes/previews/theme-discord-dark.png)
+
+
+<h2 align="center">
+   $${\color{aqua}Discord \space Light \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
+</h2>
+
 ![discord light](./themes/previews/theme-discord-light.png)
+
+
+<h2 align="center">
+   $${\color{aqua}Nordigr \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
+</h2>
+
 ![nordigr](./themes/previews/theme-nordigr.png)
+
+---
+<p align="center">
+   <a href="https://www.buymeacoffee.com/telxey" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-black.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+</p>
