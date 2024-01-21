@@ -20,7 +20,7 @@ HOLD="-"
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 
-check_root() {
+function check_root() {
   if [[ "$(id -u)" -ne 0 || $(ps -o comm= -p $PPID) == "sudo" ]]; then
     clear
     msg_error "Please run this script as root."
@@ -65,7 +65,8 @@ done
 msg_info "Cheking root"
 sleep 3
 check_root
-msg_ok "Good to GO ..." | sleep 3
+msg_ok "Good to GO ..."
+sleep 3
 
 current_kernel=$(uname -r)
 available_kernels=$(dpkg --list | grep 'kernel-.*-pve' | awk '{print $2}' | grep -v "$current_kernel" | sort -V)
