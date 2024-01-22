@@ -28,6 +28,9 @@ if you have ran the install.sh script before, you can instead just directly run 
 
     python3 PVEThemes.py
 
+For remove or completely restore the webUI to default themes if it is broken in any way  run command below  
+
+    apt get reinstall proxmox-widget-toolkit pve-manager 
 
 ##  Proxmox  Theme's Below                                         
 
