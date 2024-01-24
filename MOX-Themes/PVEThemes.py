@@ -351,8 +351,8 @@ def update():
     os.system("python3 PVEThemes.py install")
 
 def main():
-    print("PVEThemes Installer")
-    print("By: Happyrobot33")
+    print("MOX-Themes Installer")
+    print("By: Telxey")
     print("Select an option:")
     print("-------------------")
     print("0. Exit")
