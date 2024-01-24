@@ -122,7 +122,7 @@ def addButton(function, buttonName):
 			let vm = this.getViewModel();
 			view.mask(gettext('Please wait...'), 'x-mask-loading');
 
-            await sendShellCommand("cd ~/PVEThemes && python3 PVEThemes.py functionName");
+            await sendShellCommand("cd ~/PVEThemes && python3 MOXThemes.py functionName");
 
 			let expire = Ext.Date.add(new Date(), Ext.Date.YEAR, 10);
 			Ext.util.Cookies.set(view.cookieName, vm.get('theme'), expire);
@@ -334,9 +334,9 @@ def installUIOptions():
     wsh.close()
     f.close()
 
-    addButton(uninstall, "Uninstall PVEThemes")
-    addButton(install, "Reinstall PVEThemes")
-    addButton(update, "Update PVEThemes")
+    addButton(uninstall, "Uninstall MOX-Themes")
+    addButton(install, "Reinstall MOX-Themes")
+    addButton(update, "Update MOX-Themes")
     addZFSBar()
     removeSubscriptionNotice()
 
@@ -348,11 +348,11 @@ def update():
     #git pull self
     os.system("git pull --quiet")
     #exit and run self
-    os.system("python3 PVEThemes.py install")
+    os.system("python3 MOXThemes.py install")
 
 def main():
-    print("PVEThemes Installer")
-    print("By: Happyrobot33")
+    print("MOX-Themes Installer")
+    print("By: Telxey")
     print("Select an option:")
     print("-------------------")
     print("0. Exit")
