@@ -42,28 +42,28 @@ For remove or completely restore the webUI to default themes if it is broken in 
    $${\color{aqua}Avali \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
 </h2>
   
-![avali](./themes/previews/theme-avali.png)
+![avali](./previews/theme-avali.png)
 
 
 <h2 align="center">
    $${\color{aqua}Discord \space Dark \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
 </h2>
 
-![discord dark](./themes/previews/theme-discord-dark.png)
+![discord dark](./previews/theme-discord-dark.png)
 
 
 <h2 align="center">
    $${\color{aqua}Discord \space Light \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
 </h2>
 
-![discord light](./themes/previews/theme-discord-light.png)
+![discord light](./previews/theme-discord-light.png)
 
 
 <h2 align="center">
    $${\color{aqua}Nordigr \space Theme \space Sample \space For \space \color{darkorange} Proxmox.}$$
 </h2>
 
-![nordigr](./themes/previews/theme-nordigr.png)
+![nordigr](./previews/theme-nordigr.png)
 
 ---
 <p align="center">
