@@ -20,7 +20,7 @@ chmod +x install.sh
 
 Or this one-liner:
 ```bash
-git clone https://github.com/Telxey/Proxmox/tree/main/MOX-Themes && cd PVEThemes && chmod +x install.sh && ./install.sh
+bash  -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/MOX-Themes/install)"
 ```
 
 if you have ran the install.sh script before, you can instead just directly run the python script
