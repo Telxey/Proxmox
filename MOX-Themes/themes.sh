@@ -9,6 +9,6 @@ pip3 install -r requirements.txt
 
 python3 MOXhemes.py
 
-cd .. && rm -rf MOX_Themes && cd ~
+cd ../.. && rm -rf Proxmox && cd ~
 
 deactivate
