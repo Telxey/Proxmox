@@ -66,7 +66,7 @@ echo -e "${WT}For continue press --> ${GN}${BLD} 1 ${WT}${BLD} or${CL}  ${WT}For
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) $@; break;;
-        No ) echo -e "${RD}Open vSwitch Instalation Canceled${CL}";  exit;;
+        No ) echo -e "${RD}Open vSwitch Installation Canceled${CL}";  exit;;
     esac
 done
 
