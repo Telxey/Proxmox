@@ -18,7 +18,7 @@ bash  -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/MO
 
 if you have ran the Instalations script before, you can instead just directly run the script for extra tweaks
     
-    python3 /usr/share/MOX-Themes/MOXThemes.py
+    bash -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/MOX-Themes/tweaks)"
 
 For remove or completely restore the webUI to default themes if it is broken in any way  run command below  
 
