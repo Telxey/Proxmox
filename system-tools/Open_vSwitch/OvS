@@ -1,4 +1,90 @@
-#! /bin/env bash
+#!/usr/bin/env bash
 
-apt clean && apt update
+# Copyright (c) 2023-2024 TELXEY
+# Author: Telxey ( Rax )
+# License: MIT
+# https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE
+
+WT=$(echo "\033[97m")
+LBL=$(echo "\033[38;5;33m")
+OR=$(echo "\033[38;5;208m")
+RD=$(echo "\033[01;31m")
+YW=$(echo "\033[33m")
+GN=$(echo "\033[1;92m")
+GRN=$(echo "\033[32m")
+CL=$(echo "\033[m")
+DM=$(echo "\e[2m")
+BLD=$(echo "\033[1m")
+BFR="\\r\\033[K"
+HOLD="-"
+CM="${GN}✓${CL}"
+CROSS="${RD}✗${CL}"
+
+function check_root() {
+  if [[ "$(id -u)" -ne 0 || $(ps -o comm= -p $PPID) == "sudo" ]]; then
+    clear
+    msg_error "Please run this script as root."
+    echo -e "\nExiting..."
+    sleep 2
+    exit
+  fi
+}
+
+function msg_info() {
+  local msg="$1"
+  echo -ne " ${HOLD} ${YW}${msg}..."
+}
+
+function msg_ok() {
+  local msg="$1"
+  echo -e "${BFR} ${CM} ${GN}${msg}${CL}"
+}
+
+  clear
+  echo -e "${BLD}${RD}"
+  cat <<"EOF"
+
+
+     ______             ______  
+    /      \           /      \ 
+   |  ▓▓▓▓▓▓\__     __|  ▓▓▓▓▓▓\
+   | ▓▓  | ▓▓  \   /  \ ▓▓___\▓▓
+   | ▓▓  | ▓▓\▓▓\ /  ▓▓\▓▓    \ 
+   | ▓▓  | ▓▓ \▓▓\  ▓▓ _\▓▓▓▓▓▓\
+   | ▓▓__/ ▓▓  \▓▓ ▓▓ |  \__| ▓▓
+    \▓▓    ▓▓   \▓▓▓   \▓▓    ▓▓
+     \▓▓▓▓▓▓     \▓     \▓▓▓▓▓▓ 
+                             
+                             
+EOF
+
+echo -e "${CL}${DM}${WT}Author:${CL} ${WT}(${LBL}${BLD}Rax${WT}) ${CL}${DM}${WT}From ${GN}${BLD}TELXEY"
+echo -e "${GN} Today is: ${WT} `date` "
+echo -e "${GN} PVE  Manager ip : ${WT} `IP` "
+echo -e "${OR}${BLD}Do you wish to continue Open vSwitch${CL}${GN}${BLD} ?${CL}"
+echo -e "${WT}For continue press --> ${GN}${BLD} 1 ${WT}${BLD} or${CL}  ${WT}For cancel press --> ${RD}${BLD} 2 ${CL}"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) $@; break;;
+        No ) echo -e "${RD}Open vSwitch Canceled${CL}";  exit;;
+    esac
+done
+
+check_root
+msg_info "Clean && update"
+apt clean &>/dev/null 
+apt update &>/dev/null
+msg_ok "Update and Clean $microcode"
+
+msg_info "Instaling Open vSwitch"
 apt install ifupdown2 openvswitch-switch -y
+msg_ok "Open vSwitch Instaled"
+
+msg_info "BackUP Network Configurations"
+cp /etc/network/interfaces /etc/network/interfaces.bak
+msg_ok "Network Configurations save"
+
+echo -e "${YW} If you need to restore Original Network configurations RUN${CL}
+
+echo -e  cp /etc/network/interfaces.bak /etc/network/interfaces
+
