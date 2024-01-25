@@ -1,0 +1,4 @@
+#! /bin/env bash
+
+apt get reinstall proxmox-widget-toolkit pve-manager 
+rm -rf /usr/share/MOX-Themes
