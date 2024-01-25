@@ -1,0 +1,4 @@
+#! /bin/env bash
+
+apt clean && apt update
+apt install ifupdown2 openvswitch-switch -y
