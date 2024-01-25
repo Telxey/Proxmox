@@ -10,3 +10,5 @@ pip3 install -r requirements.txt
 python3 MOXThemes.py
 
 deactivate
+
+cd ~
