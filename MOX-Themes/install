@@ -3,5 +3,5 @@ apt update
 apt install -y git python3 python3-pip
 
 git clone --branch themes https://github.com/Telxey/Proxmox.git
-cd Proxmox/MOX-Themes 
+mv Proxmox/MOX-Themes /usr/share/MOX-Themes && rm -rf Proxmox && cd /usr/share/MOX-Themes 
 bash themes.sh
