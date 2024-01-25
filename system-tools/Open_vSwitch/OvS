@@ -59,14 +59,15 @@ function msg_ok() {
 EOF
 
 echo -e "${CL}${DM}${WT}Author:${CL} ${WT}(${LBL}${BLD}Rax${WT}) ${CL}${DM}${WT}From ${GN}${BLD}TELXEY"
+IP
 echo -e "${GN} Today is: ${WT} `date` "
-echo -e "${GN} PVE  Manager ip : ${WT} `IP` "
+echo -e "${GN} PVE  Manager ip : ${WT} IP "
 echo -e "${OR}${BLD}Do you wish to continue Open vSwitch${CL}${GN}${BLD} ?${CL}"
 echo -e "${WT}For continue press --> ${GN}${BLD} 1 ${WT}${BLD} or${CL}  ${WT}For cancel press --> ${RD}${BLD} 2 ${CL}"
 select yn in "Yes" "No"; do
     case $yn in
         Yes ) $@; break;;
-        No ) echo -e "${RD}Open vSwitch Canceled${CL}";  exit;;
+        No ) echo -e "${RD}Open vSwitch Instalation Canceled${CL}";  exit;;
     esac
 done
 
@@ -77,14 +78,14 @@ apt update &>/dev/null
 msg_ok "Update and Clean $microcode"
 
 msg_info "Instaling Open vSwitch"
-apt install ifupdown2 openvswitch-switch -y
+apt install ifupdown2 openvswitch-switch -y &>/dev/null
 msg_ok "Open vSwitch Instaled"
 
 msg_info "BackUP Network Configurations"
 cp /etc/network/interfaces /etc/network/interfaces.bak
 msg_ok "Network Configurations save"
 
-echo -e "${YW} If you need to restore Original Network configurations RUN${CL}
+echo -e "${YW} If you need to restore Original Network configurations RUN${CL}"
 
-echo -e  cp /etc/network/interfaces.bak /etc/network/interfaces
+echo -e  " cp /etc/network/interfaces.bak /etc/network/interfaces "
 
