@@ -1,5 +1,5 @@
 <h1 align="center">
-   $${\color{aqua}Hi \space 👋, \space Here \space have \space collections \space of \space scripts \space to \space optimised \space \color{darkorange} Proxmox.}$$
+   $${\color{aqua}Hi \space 👋, \space Here \space have \space scripts \space to \space optimised \space \color{darkorange} Proxmox.}$$
 </h1>
 
 <p align="center">
