@@ -84,13 +84,13 @@ msg_info "BackUP Network Configurations"
 cp /etc/network/interfaces /etc/network/interfaces.bak
 msg_ok "Network Configurations save"
 
-echo -e "${WT} If you need to restore Original Network configurations RUN${CL}"
+msg_info "${BLD} If you need to restore Original Network configurations RUN${CL}"
 
 cat <<"EOF"
 
-            cp /etc/network/interfaces.bak /etc/network/interfaces 
+       cp /etc/network/interfaces.bak /etc/network/interfaces 
 
-              ifreload -a && systemctl restart networking.service
+       ifreload -a && systemctl restart networking.service
 
 EOF
 
