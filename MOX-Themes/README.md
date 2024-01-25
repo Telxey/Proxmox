@@ -13,13 +13,6 @@ there is a few additional tweaks that can be enabled using the script. These are
 ## Installation
 Run the following commands in your PVE instance:
 ```bash
-git clone https://github.com/Telxey/Proxmox/tree/main/MOX-Themes
-chmod +x install.sh
-./install.sh
-```
-
-Or this one-liner:
-```bash
 bash  -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/MOX-Themes/install)"
 ```
 
@@ -29,7 +22,7 @@ if you have ran the install.sh script before, you can instead just directly run 
 
 For remove or completely restore the webUI to default themes if it is broken in any way  run command below  
 
-    apt get reinstall proxmox-widget-toolkit pve-manager 
+    bash  -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/MOX-Themes/remove)"
 
 ##  Proxmox  Theme's Below                                         
 
