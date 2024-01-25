@@ -16,9 +16,9 @@ Run the following commands in your PVE instance:
 bash  -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/MOX-Themes/install)"
 ```
 
-if you have ran the install.sh script before, you can instead just directly run the python script
-
-    python3 PVEThemes.py
+if you have ran the Instalations script before, you can instead just directly run the script for extra tweaks
+    
+    python3 /usr/share/MOX-Themes/MOXThemes.py
 
 For remove or completely restore the webUI to default themes if it is broken in any way  run command below  
 
