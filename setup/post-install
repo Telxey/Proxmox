@@ -214,10 +214,10 @@ EOF
     apt-get -y dist-upgrade &>/dev/null
     msg_ok "Updated Proxmox VE"
     msg_info "Set New Banner"
-    mv /usr/bin/pvebanner /usr/bin/pvebanner.backup
-    wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/oh-my-zsh/pvebanner -P /usr/bin/
+    mv /usr/bin/pvebanner /usr/bin/pvebanner.backup &>/dev/null
+    wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/oh-my-zsh/pvebanner -P /usr/bin/ &>/dev/null
     chmod +x /usr/bin/pvebanner
-    systemctl restart pvebanner
+    systemctl restart pvebanner &>/dev/null
     msg_ok "Updated Banner"
     ;;
   no)
