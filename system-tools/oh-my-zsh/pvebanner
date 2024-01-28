@@ -27,7 +27,7 @@ $xline
 Welcome to the Proxmox Virtual Environment. Please use your web browser to 
 configure this server - connect to:
 
-  https://${localip}:8006/   OR   https://${nodename}.you-domain:8006
+  https://${localip}:8006/  
 
 $xline
 
