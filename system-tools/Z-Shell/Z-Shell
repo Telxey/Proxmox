@@ -20,6 +20,18 @@ HOLD="-"
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 
+## Spinner time...
+spin() {
+        spin='-\|/'
+        i=0
+        while kill -0 $pid 2>/dev/null
+        do
+            i=$(( (i+1) %4 ))
+            printf "\r${spin:$i:1}"
+            sleep .25
+        done
+  }
+
 
 function msg_info() {
   local msg="$1"
@@ -38,8 +50,12 @@ apt install -y zsh &>/dev/null
 apt install -y git &>/dev/null
 msg_ok "Z-Shell Installed"
 msg_info "Installing Extra Features (Patience)"
-apt  install -y figlet neofetch toilet btop duf htop &>/dev/null
+apt  install -y figlet neofetch toilet btop duf htop &> /dev/null; spin
 msg_ok "Extras Installed"
+msg_info "backup bash configurations"
+cp ~/.bashrc  ~/.bashrc.backup
+chsh -s /bin/zsh
+chsh -s /usr/bin/zsh root
 chsh -s $(which zsh)
 echo -e "${OR}${BLD}Z-Shell${YW}${BLD} Version and locations (expected) ${RD}---> ${GN}/usr/bin/zsh ${LBL}"
 zsh --version
