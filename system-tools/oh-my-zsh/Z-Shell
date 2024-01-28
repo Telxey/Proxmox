@@ -1,7 +1,9 @@
 #! /bin/env bash
 
-apt install zsh
-apt install git
+apt update
+apt  install -y figlet neofetch toilet btop duf htop
+apt install -y zsh
+apt install -y git
 
 zsh --version
 
@@ -11,4 +13,8 @@ echo $SHELL
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+mv /usr/bin/pvebanner /usr/bin/pvebanner.backup
+wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/oh-my-zsh/pvebanner -P /usr/bin/
+mv /.zshrc /.zshrc.bak
+wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/oh-my-zsh/.zshrc -P /
 source ~/.zshrc
