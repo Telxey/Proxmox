@@ -21,7 +21,6 @@ if ($localip) {
         ██║     ██║  ██║╚██████╔╝██╔╝ ██╗██║ ╚═╝ ██║╚██████╔╝██╔╝ ██╗
         ╚═╝     ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═╝
 
-
 $xline
 
 Welcome to the Proxmox Virtual Environment. Please use your web browser to 
