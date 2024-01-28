@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /bin/env 
 
 # Copyright (c) 2023-2024 TELXEY
 # Author: Telxey ( Rax )
