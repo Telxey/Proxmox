@@ -44,6 +44,6 @@ msg_info "Enabling Plugins"
 mv ~/.zshrc ~/.zshrc.bak
 wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/Z-Shell/.zshrc -P ~/ &>/dev/null
 msg_ok "Plugins Set"
-msg_info "Reload Configurations"
+msg_info "Set Plugins"
 source ~/.zshrc
 msg_ok "Installed Z-Shell"
