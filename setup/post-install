@@ -215,7 +215,7 @@ EOF
     msg_ok "Updated Proxmox VE"
     msg_info "Set New Banner"
     mv /usr/bin/pvebanner /usr/bin/pvebanner.backup &>/dev/null
-    wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/oh-my-zsh/pvebanner -P /usr/bin/ &>/dev/null
+    wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/Z-Shell/pvebanner -P /usr/bin/ &>/dev/null
     chmod +x /usr/bin/pvebanner
     systemctl restart pvebanner &>/dev/null
     msg_ok "Updated Banner"
