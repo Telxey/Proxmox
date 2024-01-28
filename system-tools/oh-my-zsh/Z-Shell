@@ -39,9 +39,9 @@ apt install -y git &>/dev/null
 msg_ok "Z-Shell Installed"
 msg_info "Installing Extra Features (Patience)"
 apt  install -y figlet neofetch toilet btop duf htop &>/dev/null
-msg_ok "Installed"
+msg_ok "Extras Installed"
 chsh -s $(which zsh)
-cat -e "${YW}${$BLD}Zsh Version and locations (expected ${GN}/usr/bin/zsh${WT}
+cat -e "${YW}${$BLD}Zsh Version and locations (expected ${GN}/usr/bin/zsh${WT}"
 zsh --version
 echo -e "{GN}" $SHELL
 echo -e "${CL}"
