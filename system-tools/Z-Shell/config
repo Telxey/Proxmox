@@ -46,4 +46,3 @@ wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/Z-Shell/
 msg_ok "Plugins Set"
 msg_info "Set Plugins"
 source ~/.zshrc
-msg_ok "Installed Z-Shell"
