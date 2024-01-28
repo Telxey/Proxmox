@@ -49,10 +49,7 @@ sleep 10
 msg_info "Installing Oh my zsh"
 #sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &>/dev/null
 
-wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh &>/dev/null
-bash install.sh
-sleep 3
-rm install.sh
+bash -c "(wget -qLO -  https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 msg_ok "oh my zsh Installed"
 msg_info "Configure oh my zsh and Z-Shell"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting &>/dev/null
