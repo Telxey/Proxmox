@@ -49,13 +49,14 @@ sleep 10
 msg_info "Installing Oh my zsh"
 #sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &>/dev/null
 
-bash -c "(wget -qLO -  https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+bash -c "$(wget -qLO -  https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 msg_ok "oh my zsh Installed"
 msg_info "Configure oh my zsh and Z-Shell"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting &>/dev/null
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions &>/dev/null
 msg_info "Enabling Plugins"
 mv ~/.zshrc ~/.zshrc.bak
+sleep 3
 wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/Z-Shell/.zshrc -P ~/ &>/dev/null
 msg_ok "Plugins Set"
 msg_info "Apply Configurations"
