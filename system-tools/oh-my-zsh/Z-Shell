@@ -41,7 +41,7 @@ msg_info "Installing Extra Features (Patience)"
 apt  install -y figlet neofetch toilet btop duf htop &>/dev/null
 msg_ok "Extras Installed"
 chsh -s $(which zsh)
-echo -e "${YW}${BLD}Zsh Version and locations (expected ${GN}/usr/bin/zsh ${WT}"
+echo -e "${YW}${BLD}Z--Shell Version and locations (expected) ${RD}---> ${GN}/usr/bin/zsh ${LBL}"
 zsh --version
 echo -e "${GN}" $SHELL
 echo -e "${CL}"
@@ -49,7 +49,9 @@ sleep 10
 msg_info "Installing Oh my zsh"
 #sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &>/dev/null
 
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" &>/dev/null
+wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh &>/dev/null
+bash install.sh
+rm install.sh
 msg_ok "oh my zsh Installed"
 msg_info "Configure oh my zsh and Z-Shell"
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting &>/dev/null
