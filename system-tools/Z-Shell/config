@@ -42,7 +42,7 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions &>/dev/null
 msg_info "Enabling Plugins"
 mv ~/.zshrc ~/.zshrc.bak
-wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/Z-Shell/.zshrc -P ~/.zshrc
+wget https://raw.githubusercontent.com/Telxey/Proxmox/main/system-tools/Z-Shell/.zshrc -P ~/ &>/dev/null
 msg_ok "Plugins Set"
 msg_info "Reload Configurations"
 source ~/.zshrc
