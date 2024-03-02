@@ -154,12 +154,12 @@ select yn in "Yes" "No"; do
     esac
 done
 
-echo "${orange}Good loading script ${normal}
+echo "${orange}Good loading script ${normal}"
 count
 
 clear
 
-echo "${orange}
+echo "${orange}"
 cat <<"EOF"
 
  ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
@@ -214,12 +214,12 @@ msg_info "Kill Remaining Ceph process"
 #killall -9 ceph-mon ceph-mgr ceph-mds
 msg_ok "Down"
 msg_info "Removing Ceph Libraries"
-echo "${red}"${bold}"
-rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/ ; progress-bar 50
-msg_ok "Removed"
+#echo "${red}"${bold}"
+rm -rf /var/lib/ceph/mon/  /var/lib/ceph/mgr/  /var/lib/ceph/mds/
+msg_ok "Libraries Removed"
 msg_info "Purge pveCeph"
 echo "${green}"
-pveceph purge &>  /dev/null; progress-bar 25 
+pveceph purge &>  /dev/null
 apt purge -y ceph-mon ceph-osd ceph-mgr ceph-mds &> /dev/null;  progress-bar 50
 apt purge -y ceph-base ceph-mgr-modules-core &> /dev/null; progress-bar 50
 msg_ok "Purged"
