@@ -156,7 +156,7 @@ done
 
 echo "${orange}Good loading script ${normal}
 count
-# 
+
 clear
 
 echo "${orange}
@@ -173,7 +173,7 @@ cat <<"EOF"
 ░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
 
 EOF
-echo "${dim}${white}Author: ${green}${bold}TELXEY"
+echo "${dim}${white}Author: ${green}${bold}TELXEY ${normal}"
 echo "${lightyellow}Hello${green} Today is: ${lightpurple} `date` "
 echo "${normal}"
 echo "${white}${underline}"
@@ -196,19 +196,22 @@ msg_ok "Script loaded"
 msg_info "Stoping Ceph Services"
 echo "${orange}"
 systemctl stop ceph-mon.target &> /dev/null; progress-bar 25
+msg_ok "ceph-mon Stoped"
 echo "${green}"
 systemctl stop ceph-mgr.target &> /dev/null; progress-bar 25
+msg_ok "ceph-mgr Stoped"
 echo "${red}"
 systemctl stop ceph-mds.target &> /dev/null; progress-bar 25
+msg_ok "ceph-mds Stoped"
 echo "${white}"
 systemctl stop ceph-osd.target &> /dev/null; progress-bar 25
-msg_ok "Stoped"
+msg_ok "ceph-osd Stoped"
 msg_info "Removing systemd ceph processes"
 echo "${orange}"
 rm -rf /etc/systemd/system/ceph* &> /dev/null; progress-bar 25
 msg_ok "Removed"
 msg_info "Kill Remaining Ceph process"
-killall -9 ceph-mon ceph-mgr ceph-mds
+#killall -9 ceph-mon ceph-mgr ceph-mds
 msg_ok "Down"
 msg_info "Removing Ceph Libraries"
 echo "${red}"${bold}"
@@ -217,10 +220,11 @@ msg_ok "Removed"
 msg_info "Purge pveCeph"
 echo "${green}"
 pveceph purge &>  /dev/null; progress-bar 25 
-apt purge ceph-mon ceph-osd ceph-mgr ceph-mds &> /dev/null;  progress-bar 50
-apt purge ceph-base ceph-mgr-modules-core &> /dev/null; progress-bar 50
+apt purge -y ceph-mon ceph-osd ceph-mgr ceph-mds &> /dev/null;  progress-bar 50
+apt purge -y ceph-base ceph-mgr-modules-core &> /dev/null; progress-bar 50
 msg_ok "Purged"
 msg_info "Removing Configurations"
+msg_info "Type Y to renove CEPH Files"
 rm -rf /etc/ceph/*
 rm -rf /etc/pve/ceph.conf
 rm -rf /etc/pve/priv/ceph.*
