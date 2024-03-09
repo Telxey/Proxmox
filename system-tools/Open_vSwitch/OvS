@@ -88,7 +88,6 @@ msg_info "${BLD} If you need to restore Original Network configurations RUN${CL}
 echo -e "${CL}"
 echo -e "${LBL}${BLD}"
 cat <<"EOF"
-
        cp /etc/network/interfaces.bak /etc/network/interfaces 
 EOF
 echo -e "${CL}"
