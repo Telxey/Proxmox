@@ -89,18 +89,17 @@ echo -e "${CL}"
 echo -e "${LBL}${BLD}"
 cat <<"EOF"
 
-     cp /etc/network/interfaces.bak /etc/network/interfaces 
+       cp /etc/network/interfaces.bak /etc/network/interfaces 
 EOF
 echo -e "${CL}"
-msg_info "${BLD}When  down reload networl configurations by RUN"
+msg_info "${BLD}When down reload network configurations by RUN"
 echo -e "${LBL}${BLD}"
 cat <<"EOF"
-
 
        ifreload -a && systemctl restart networking.service
 
 EOF
-msg_ok "Thank You For Use This Script"
+msg_ok " Thank You For Use This Script"
 
 
 
