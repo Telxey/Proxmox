@@ -86,17 +86,22 @@ msg_ok "Network Configurations save"
 
 msg_info "${BLD} If you need to restore Original Network configurations RUN${CL}"
 echo -e "${CL}"
-
+eho -e "${LBL}${BLD}"
 cat <<"EOF"
 
      cp /etc/network/interfaces.bak /etc/network/interfaces 
+
 EOF
-msg_info "${BLD}When  down reload networl configurations by RUN 
+echo -e "${CL}"
+msg_info "${BLD}When  down reload networl configurations by RUN"
 
 cat <<"EOF"
+
+
        ifreload -a && systemctl restart networking.service
 
 EOF
+msg_ok "Thank You For Use This Script"
 
 
 
