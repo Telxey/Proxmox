@@ -196,7 +196,7 @@ function default_settings() {
   VMID=$NEXTID
   HN=openwrt
   CORE_COUNT="1"
-  RAM_SIZE="256"
+  RAM_SIZE="512"
   BRG="vmbr0"
   VLAN=""
   MAC=$GEN_MAC
@@ -280,7 +280,7 @@ function advanced_settings() {
     exit-script
   fi
 
-  if LAN_BRG=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a LAN Bridge" 8 58 vmbr0 --title "LAN BRIDGE" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
+  if LAN_BRG=$(whiptail --backtitle "Telxey Proxmox Scripts" --inputbox "Set a LAN Bridge" 8 58 vmbr0 --title "LAN BRIDGE" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
     if [ -z $LAN_BRG ]; then
       LAN_BRG="vmbr0"
     fi
@@ -289,7 +289,7 @@ function advanced_settings() {
     exit-script
   fi
 
-  if LAN_IP_ADDR=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a router IP" 8 58 $LAN_IP_ADDR --title "LAN IP ADDRESS" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
+  if LAN_IP_ADDR=$(whiptail --backtitle "Telxey Proxmox Scripts" --inputbox "Set a router IP" 8 58 $LAN_IP_ADDR --title "LAN IP ADDRESS" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
     if [ -z $LAN_IP_ADDR ]; then
       LAN_IP_ADDR="192.168.100.1"
     fi
@@ -298,7 +298,7 @@ function advanced_settings() {
     exit-script
   fi
 
-  if LAN_NETMASK=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a router netmmask" 8 58 $LAN_NETMASK --title "LAN NETMASK" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
+  if LAN_NETMASK=$(whiptail --backtitle "Telxey Proxmox Scripts" --inputbox "Set a router netmmask" 8 58 $LAN_NETMASK --title "LAN NETMASK" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
     if [ -z $LAN_NETMASK ]; then
       LAN_NETMASK="255.255.255.0"
     fi
@@ -341,7 +341,7 @@ function advanced_settings() {
     exit-script
   fi
 
-  if VLAN2=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a LAN Vlan" 8 58 999 --title "LAN VLAN" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
+  if VLAN2=$(whiptail --backtitle "Telxey Proxmox Scripts" --inputbox "Set a LAN Vlan" 8 58 69 --title "LAN VLAN" --cancel-button Exit-Script 3>&1 1>&2 2>&3); then
     if [ -z $VLAN2 ]; then
       VLAN2="69"
       LAN_VLAN=",tag=$VLAN2"
@@ -477,11 +477,11 @@ qm set $VMID \
 
   # OpenWRT
 
-  <a href='https://www.buymeacoffee.com/telxey'><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="20" width="80" /></a>
+  <a href='https://www.buymeacoffee.com/telxey'><img src='https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png' /></a>
   </div>" >/dev/null
 msg_ok "Created OpenWrt VM ${CL}${BL}(${HN})"
 msg_info "OpenWrt is being started in order to configure the network interfaces."
-qm start $VMID
+qm start $VMID 
 sleep 15
 msg_ok "Network interfaces are being configured as OpenWrt initiates."
 send_line_to_vm ""
