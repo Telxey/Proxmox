@@ -372,7 +372,7 @@ function advanced_settings() {
   fi
   echo -e "${DGN}Start VM when completed: ${BGN}$START_VM${CL}"
 
-  if (whiptail --backtitle "Proxmox VE Helper Scripts" --title "ADVANCED SETTINGS COMPLETE" --yesno "Ready to create OpenWrt VM?" --no-button Do-Over 10 58); then
+  if (whiptail --backtitle "Telxey Proxmox Scripts" --title "ADVANCED SETTINGS COMPLETE" --yesno "Ready to create OpenWrt VM?" --no-button Do-Over 10 58); then
     echo -e "${RD}Creating a OpenWrt VM using the above advanced settings${CL}"
   else
     header_info
@@ -443,7 +443,7 @@ gunzip -f $FILE >/dev/null 2>/dev/null || true
 NEWFILE="${FILE%.*}"
 FILE="$NEWFILE"
 mv $FILE ${FILE%.*}
-qemu-img resize -f raw ${FILE%.*} 512M >/dev/null 2>/dev/null
+qemu-img resize -f raw ${FILE%.*} 1024M >/dev/null 2>/dev/null
 msg_ok "Extracted & Resized OpenWrt Disk Image ${CL}${BL}$FILE${CL}"
 STORAGE_TYPE=$(pvesm status -storage $STORAGE | awk 'NR>1 {print $2}')
 case $STORAGE_TYPE in
@@ -466,16 +466,15 @@ done
 
 msg_info "Creating OpenWrt VM"
 qm create $VMID -cores $CORE_COUNT -memory $RAM_SIZE -name $HN \
-  -onboot 1 -ostype l26 -scsihw virtio-scsi-pci --tablet 0
-pvesm alloc $STORAGE $VMID $DISK0 4M 1>&/dev/null
+  -onboot 1 -ostype 512 -scsihw virtio-scsi-pci --tablet 0
+pvesm alloc $STORAGE $VMID $DISK0 8M 1>&/dev/null
 qm importdisk $VMID ${FILE%.*} $STORAGE ${DISK_IMPORT:-} 1>&/dev/null
 qm set $VMID \
-  -efidisk0 ${DISK0_REF},efitype=4m,size=4M \
-  -scsi0 ${DISK1_REF},size=512M \
+  -efidisk0 ${DISK0_REF},efitype=4m,size=8M \
+  -scsi0 ${DISK1_REF},size=1024M \
   -boot order=scsi0 \
   -tags Telxey-Proxmox-Scripts \
-  
-  -description <div align='center'><a href='https://openwrt.org'><img src='https://github.com/Telxey/Proxmox/assets/131807761/54c883fc-5e3e-4847-9e26-fca8c5590815'/></a>
+  -description "<div align='center'><a href='https://openwrt.org'><img src='https://github.com/Telxey/Proxmox/assets/131807761/54c883fc-5e3e-4847-9e26-fca8c5590815'/></a>
   
   #   OpenWRT 
   
