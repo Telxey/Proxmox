@@ -474,11 +474,12 @@ qm set $VMID \
   -scsi0 ${DISK1_REF},size=512M \
   -boot order=scsi0 \
   -tags Telxey-Proxmox-Scripts \
-  -description "<div align='center'><a href='https://openwrt.org'><img src='https://github.com/openwrt/branding/blob/master/logo/openwrt_logo_text_horizontal_blue_and_dark_blue.svg'/></a>
   
-  # OpenWRT 
+  -description <div align='center'><a href='https://openwrt.org'><img src='https://github.com/Telxey/Proxmox/assets/131807761/54c883fc-5e3e-4847-9e26-fca8c5590815'/></a>
   
-  <a href="https://www.buymeacoffee.com/telxey"> <img align="center" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="45" width="180" alt="telxey" /></a>
+  #   OpenWRT 
+  
+  <a href='https://www.buymeacoffee.com/telxey'><img align='center' src='https://img.shields.io/badge/&#x2615;-Buy me a coffee-blue' /></a>
   </div>" >/dev/null
 msg_ok "Created OpenWrt VM ${CL}${BL}(${HN})"
 msg_info "OpenWrt is being started in order to configure the network interfaces."
