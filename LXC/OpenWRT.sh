@@ -477,7 +477,8 @@ qm set $VMID \
 
   # OpenWRT
 
-  <a href='https://www.buymeacoffee.com/telxey'><img src='https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png' /></a>
+  <a href="https://www.buymeacoffee.com/telxey"> <img align="center" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="20" width="80" alt="telxey" />
+  # <a href='https://www.buymeacoffee.com/telxey'><img src='https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png' /></a>
   </div>" >/dev/null
 msg_ok "Created OpenWrt VM ${CL}${BL}(${HN})"
 msg_info "OpenWrt is being started in order to configure the network interfaces."
