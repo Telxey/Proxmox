@@ -5,17 +5,6 @@
 # License: MIT
 # https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE
 
-if ! [ "$(id -u)" = 0 ]; then
-   echo "The script need to be run as root." >&2
-   exit 1
-fi
-
-if [ "$SUDO_USER" ]; then
-    export real_user=$SUDO_USER
-else
-    real_user=$(whoami)
-fi
-
 # Colors Codes
  default=`echo -en "\e[39m"`
  UL="\033[4m"
@@ -88,8 +77,16 @@ check_root() {
     exit
   fi
 }
+if ! [ "$(id -u)" = 0 ]; then
+   echo "The script need to be run as root." >&2
+   exit 1
+fi
 
-
+if [ "$SUDO_USER" ]; then
+    export real_user=$SUDO_USER
+else
+    real_user=$(whoami)
+fi
 
 clear
 echo -e "${RED}${BOLD}"
@@ -118,7 +115,7 @@ ARCH=$(uname -m)
 LOCAL_IP=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
 EXT_IP=$(dig @resolver4.opendns.com myip.opendns.com +short)
 if echo "$OUTPUT" | grep -q "Orange Pi" ; then
-echo -e " ${GRN}${BOLD} .  supported OS${CLE}${RED} $OS${ORG} $NAME ${LBL}$ARCH  ${GRN}${BOLD}Runimg ${CLE}"
+echo -e " ${GRN}${BOLD}   supported OS${CLE}${RED} $OS${ORG} $NAME ${LBL}$ARCH  ${GRN}${BOLD}Runimg ${CLE}"
 echo -e "${CL}${WHT}Hostname${RED}: ${GRN}$HS ${WHT}Local IP${RED}:${GRN} $LOCAL_IP ${WHT} Eternal IP${RED}: ${GRN}$EXT_IP${CL}"
               export  SERVER_OS="Orange Pi"
 
