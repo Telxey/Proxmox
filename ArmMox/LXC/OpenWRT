@@ -165,7 +165,7 @@ function pve_check() {
 }
 
 function arch_check() {
-  if [ "$(dpkg --print-architecture)" != "x86_64" ]; then
+  if [ "$(dpkg --print-architecture)" != "arm64" ]; then
     echo -e "\n ${CROSS} This script will make to work with PiMox! \n"
     echo -e "Exiting..."
     sleep 2
