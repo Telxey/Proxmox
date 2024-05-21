@@ -71,14 +71,14 @@ msg_error() {
 check_root() {
   if [[ "$(id -u)" -ne 0 || $(ps -o comm= -p $PPID) == "sudo" ]]; then
     clear
-    msg_error "Please run this script as root."
+    msg_error "The script need to be run as roo"
     echo -e "\nExiting..."
     sleep 2
     exit
   fi
 }
 if ! [ "$(id -u)" = 0 ]; then
-   echo "The script need to be run as root." >&2
+   msg_error >&2
    exit 1
 fi
 
