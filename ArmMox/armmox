@@ -148,7 +148,7 @@ fi
 read -r -p "Would you like set HOSTNAME  now ?( If no hit enter ) <y/N> " prompt
 if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
 read -p "Enter new hostname e.g. armmox : " HOSTNAME
-while [[ ! "$HOSTNAME" =~ ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])>
+while [[ ! "$HOSTNAME" =~ ^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$ ]]
  do
   printf " --->$RED $HOSTNAME $CLE<--- Is NOT an valid HOSTNAME, try again...\n"
   read -p "Enter new hostname e.g.: armmox  : " HOSTNAME
