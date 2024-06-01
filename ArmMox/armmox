@@ -220,7 +220,7 @@ msg_ok "autologin Stoped"
 
 msg_info "Adding proxmox ARM64 and aarch64 repos"
 curl -s https://mirrors.apqa.cn/proxmox/debian/pveport.gpg | tee /usr/share/keyrings/pveport.gpg &> /dev/null
-echo "deb [deb=arm64 signed-by=/usr/share/keyrings/pveport.gpg] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port" | tee  /etc/apt/sources.list.d/pveport.list &> /dev/null
+echo "deb [deb=arm64] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port" | tee  /etc/apt/sources.list.d/pveport.list &> /dev/null
 sleep 3
 msg_ok "proxmox arm repos added"
 msg_info "Updating packages list"
