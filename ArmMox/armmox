@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /bin/env bash
 
 # Copyright (c) 2021-2024 Telxey
 # Author: TELXEY (Rax)
@@ -53,6 +53,11 @@ progress-bar() {
   clean_line
 }
 
+# This function clear all colors .
+msg_clear() {
+  local msg="$1"
+  echo -e "${BFR} ${msg}${CL}"
+}
 # This function displays an informational message with a yellow color.
 msg_info() {
   local msg="$1"
@@ -156,8 +161,12 @@ done
 hostnamectl set-hostname $HOSTNAME
 printf " $WHT New Hostname $RED--->$GRN $HOSTNAME $RED<---$CLE\n"
 fi
-sleep 5
-###
+printf $ORG
+progress-bar 75 $CLE; msg_clear
+
+cat <<"EOF"
+
+EOF
 #
 #
 # Start collecting system OS
@@ -184,7 +193,7 @@ msg_info "check for updates"
 rm -f /etc/apt/sources.list.d/docker.list
 apt update &> /dev/null
 sleep 3
-msg_ok "DONE"
+msg_ok "System Updated"
 msg_info "Installing available upgrades"
 apt upgrade -y &> /dev/null
 msg_ok "upgrades Installed"
@@ -213,30 +222,23 @@ msg_info "Adding proxmox ARM64 and aarch64 repos"
 curl -s https://mirrors.apqa.cn/proxmox/debian/pveport.gpg | tee /usr/share/keyrings/pveport.gpg &> /dev/null
 echo "deb [deb=arm64 signed-by=/usr/share/keyrings/pveport.gpg] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port" | tee  /etc/apt/sources.list.d/pveport.list &> /dev/null
 sleep 3
-msg_ok "DONE"
+msg_ok "proxmox arm repos added"
 msg_info "Updating packages list"
 apt update &> /dev/null
 msg_ok "System updateted"
 msg_info "Instaling PVE Networking tools"
-apt install -y ifupdown2  
-msg_ok "DONE"
-sleep 10
-msg_info "Start Instalations"
-apt install -y proxmox-ve 
-msg_ok "PVE done"
-sleep 10
-msg_info "Installing postfix"
-apt install -y postfix 
-msg_ok "postfix done
-sleep 10
-msg_info "install iscosi"
-apt install -y open-iscsi
-msg_ok "iscsi done"
-sleep 10
-msg_info "install edk2"
-apt install -y pve-edk2-firmware-aarch64
-masg_ok " proxmox Instaled sucess "
-
+sudo apt install -y ifupdown2  &> /dev/null
+msg_ok "iptools instaled"
+msg_info "Instaling Postfix"
+sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select Local only"
+sudo debconf-set-selections <<< "postfix postfix/mailname string $HOSTNAME"
+apt install -y postfic &> /dev/null
+msg_ok "Postfix instaled"
+msg_ok "Start proxmox Instalations"
+# apt install -y proxmox-ve open-iscsi pve-edk2-firmware-aarch64  &> /dev/null
+apt install -y proxmox-ve open-iscsi pve-edk2-firmware-aarch64
+msg_ok " proxmox Instaled sucess "
+msg_ok " DONE"
 
 printf "
 =========================================================================================
@@ -247,11 +249,15 @@ printf "
       --->  $GRN https://$LOCAL_IP:8006/ $CLE <---
 
     For External access to PVE interface set route to be reachable here :
-      --->  $GRN https://$EXT_IP:8006/ $CLE
+      --->  $GRN https://$EXT_IP:8006/ $CLE <---
+         
          run ---> $YLW apt upgrade -y $CLE <---
 
            in a root shell to complete the installation.
 
-\n" && sleep 10 && reboot
-
+\n" 
+printf " $GRN Systen Rebooting $CLE \n"
+printf  $ORG
+progress-bar 100 $RED; msg_clear && reboot
+exit
 #### EOF ####
