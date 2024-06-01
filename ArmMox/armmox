@@ -233,11 +233,11 @@ sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select Local o
 sudo debconf-set-selections <<< "postfix postfix/mailname string $HOSTNAME"
 apt install -y postfix &> /dev/null
 msg_ok "Postfix instaled"
-msg_ok "Start proxmox Instalations"
+msg_info "Start proxmox Instalations"
 apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install proxmox-ve open-iscsi grub-efi-arm64 pve-edk2-firmware-aarch64 &> /dev/null
 msg_ok "Proxmox Installed sucess"
 msg_info "Preconfigure Post Install"
-apt autoremove-y &> /dev/null
+apt autoremove -y &> /dev/null
 sed -i '1 s/^/#/' /etc/apt/sources.list.d/pveport.list
 echo "deb [arch=arm64] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port" | tee  /etc/apt/sources.list.d/pveport.list &> /dev/null
 apt update &> /dev/null
