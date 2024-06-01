@@ -220,6 +220,7 @@ msg_ok "autologin Stoped"
 
 msg_info "Adding proxmox ARM64 and aarch64 repos"
 curl -s https://mirrors.apqa.cn/proxmox/debian/pveport.gpg | tee /usr/share/keyrings/pveport.gpg &> /dev/null
+echo "deb [deb=arm64 signed-by=/usr/share/keyrings/pveport.gpg] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port" | tee  /etc/apt/sources.list.d/pveport.list &> /dev/null
 echo "deb [deb=arm64] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port" | tee  /etc/apt/sources.list.d/pveport.list &> /dev/null
 sleep 3
 msg_ok "proxmox arm repos added"
@@ -235,7 +236,10 @@ sudo debconf-set-selections <<< "postfix postfix/mailname string $HOSTNAME"
 apt install -y postfix &> /dev/null
 msg_ok "Postfix instaled"
 msg_ok "Start proxmox Instalations"
-apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install proxmox-ve open-iscsi grub-efi-arm64 pve-edk2-firmware-aarch64 
+apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install proxmox-ve open-iscsi grub-efi-arm64 pve-edk2-firmware-aarch64 &> /dev/null
+sed -i '1 s/^/#/' /etc/apt/sources.list.d/pveport.list
+apt update &> /dev/null
+apt upgrade -y &> /dev/null
 msg_ok " proxmox Instaled sucess "
 msg_ok " DONE"
 
