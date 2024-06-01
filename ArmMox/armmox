@@ -227,7 +227,7 @@ msg_info "Updating packages list"
 apt update &> /dev/null
 msg_ok "System updateted"
 msg_info "Instaling PVE Networking tools"
-sudo apt install -y ifupdown2 openvswitch-switch &> /dev/null
+sudo apt install -y ifupdown2 openvswitch-switch grub-efi-arm64 &> /dev/null
 msg_ok "iptools instaled"
 msg_info "Instaling Postfix"
 sudo debconf-set-selections <<< "postfix postfix/main_mailer_type select Local only"
@@ -235,9 +235,7 @@ sudo debconf-set-selections <<< "postfix postfix/mailname string $HOSTNAME"
 apt install -y postfix &> /dev/null
 msg_ok "Postfix instaled"
 msg_ok "Start proxmox Instalations"
-apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install proxmox-ve open-iscsi pve-edk2-firmware-aarch64
-# apt install -y proxmox-ve open-iscsi pve-edk2-firmware-aarch64  &> /dev/null
-#apt install -y proxmox-ve open-iscsi pve-edk2-firmware-aarch64
+apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew install proxmox-ve open-iscsi pve-edk2-firmware-aarch64 &> /dev/null
 msg_ok " proxmox Instaled sucess "
 msg_ok " DONE"
 
