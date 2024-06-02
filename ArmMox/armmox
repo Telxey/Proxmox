@@ -269,6 +269,7 @@ EOF
 cp /etc/network/interfaces /etc/network/interfaces.bak
 systemctl restart frr &> /dev/null
 systemctl restart networking &> /dev/null
+cp /etc/network/interfaces.bak /etc/network/interfaces
 msg_ok " - Instalations DONE - "
 
 printf "
