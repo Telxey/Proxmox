@@ -70,7 +70,7 @@ function cleanup() {
 
 TEMP_DIR=$(mktemp -d)
 pushd $TEMP_DIR >/dev/null
-if whiptail --backtitle "Proxmox Scripts by TELXEY" --title "Debian 12 VM" --yesno "This will create a New Debian 12 VM. Proceed?" 10 58; then
+if whiptail --backtitle "Proxmox Scripts by TELXEY" --title "Ubuntu 24.04 VM" --yesno "This will create a New Ubuntu 24.04 VM. Proceed?" 10 58; then
   :
 else
   header_info && echo -e "⚠ User exited script \n" && exit
@@ -379,7 +379,7 @@ else
 fi
 msg_ok "Using ${CL}${BL}$STORAGE${CL} ${GN}for Storage Location."
 msg_ok "Virtual Machine ID is ${CL}${BL}$VMID${CL}."
-msg_info "Retrieving the URL for the Debian 12 Qcow2 Disk Image"
+msg_info "Retrieving the URL for the Ubuntu 24.04  Disk Image"
 URL=https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
 sleep 2
 msg_ok "${CL}${BL}${URL}${CL}"
@@ -427,9 +427,9 @@ qm set $VMID \
 
   <a href='https://www.buymeacoffee.com/telxey'><img align='center' src='https://img.shields.io/badge/&#x2615;-Buy me a coffee-blue' /></a>
   </div>" >/dev/null
-msg_ok "Created a Debian 12 VM ${CL}${BL}(${HN})"
+msg_ok "Created a Ubuntu 24.04 VM ${CL}${BL}(${HN})"
 if [ "$START_VM" == "yes" ]; then
-  msg_info "Starting Debian 12 VM"
+  msg_info "Starting Ubuntu 24.04 VM"
   qm start $VMID
   msg_ok "Started Ubuntu 24.04 VM"
 fi
