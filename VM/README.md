@@ -13,7 +13,7 @@
 </h1>
 
 <h2 align="left">
-    Debian-12  ( Bookworm ) VM Install
+    Debian 12  ( Bookworm ) VM Install
 </h2>    
     
     bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/blob/main/VM/debian-12)"
@@ -29,6 +29,17 @@
 
     bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/blob/main/VM/ubuntu-24.04)"
     
+
+<h1 align="center">
+    $${\color{blue}Alpine}$$ 
+</h1>
+
+<h2 align="left"> 
+    Alpine 3.20 VM Install
+</h2>
+
+    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/VM/alpine-3.20)"
+
 <h1 align="center">
     $${\color{lightskyblue}OpenWRT}$$ 
 </h1>
