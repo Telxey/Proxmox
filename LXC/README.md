@@ -1,3 +1,3 @@
-OpemWRT Install 
+Alpine Install 
 
-    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/LXC/OpenWRT.sh)"
+    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/LXC/ct/alpine)"
