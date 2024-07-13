@@ -67,6 +67,20 @@ fi
 
 start
 build_container
-description
+# description
+
+# This function sets the description of the container.
+description() {
+  IP=$(pct exec "$CTID" ip a s dev eth0 | awk '/inet / {print $2}' | cut -d/ -f1)
+  pct set "$CTID" -description "<div align='center'><a href='https://www.alpinelinux.org' target='_blank' rel='noopener noreferrer'><img src='https://github.com/user-attachments/assets/e04ee4ce-c418-4200-adaa-8e5affbb1517'/></a>
+
+  # Alpine 3.20 LXC
+
+  <a href='https://www.buymeacoffee.com/telxey'><img align='center' src='https://img.shields.io/badge/&#x2615;-Buy me a coffee-blue' /></a>
+  </div>"
+  if [[ -f /etc/systemd/system/ping-instances.service ]]; then
+    systemctl start ping-instances.service
+  fi
+}
 
 msg_ok "Completed Successfully!\n"
