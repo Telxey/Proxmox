@@ -16,7 +16,7 @@
     Debian 12  ( Bookworm ) VM Install
 </h2>    
     
-    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/blob/main/VM/debian-12)"
+    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/VM/debian-12)"
 
 
 <h1 align="center">
@@ -27,7 +27,7 @@
     Ubuntu 24.04 LTS ( Noble Numbat ) VM Install    
 </h2>    
 
-    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/blob/main/VM/ubuntu-24.04)"
+    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/VM/ubuntu-24.04)"
     
 
 <h1 align="center">
