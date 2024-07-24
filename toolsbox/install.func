@@ -49,7 +49,7 @@ error_handler() {
 
 # This function displays a spinner.
 spinner() {
-    local chars="/-\|"
+    local chars="0oooo o0ooo oo0oo ooo0o oooo0"
     local spin_i=0
     printf "\e[?25l"
     while true; do
@@ -172,7 +172,7 @@ EOF
 # This function modifies the message of the day (motd) and SSH settings
 motd_ssh() {
   echo "export TERM='xterm-256color'" >>/root/.bashrc
-  echo -e "$APPLICATION LXC provided by https://github.com/telxey/proxmox/\n" >/etc/motd
+  echo -e "$APPLICATION LXC provided by TELXEY\n" >/etc/motd
   chmod -x /etc/update-motd.d/*
   if [[ "${SSH_ROOT}" == "yes" ]]; then
     sed -i "s/#PermitRootLogin prohibit-password/PermitRootLogin yes/g" /etc/ssh/sshd_config
@@ -195,6 +195,6 @@ EOF
     systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
     msg_ok "Customized Container"
   fi
-  echo "bash -c \"\$(wget -qLO - https://github.com/Telxey/Proxmox/blob/main/LXC/ct/${app}.sh)\"" >/usr/bin/update
+  echo "bash -c \"\$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/LXC/ct/${app}.sh)\"" >/usr/bin/update
   chmod +x /usr/bin/update
 }
