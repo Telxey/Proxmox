@@ -38,7 +38,7 @@ error_handler() {
 
 # This function displays a spinner.
 spinner() {
-    local chars="/-\|"
+    local chars="0oooo o0ooo oo0oo ooo0 oooo0"
     local spin_i=0
     printf "\e[?25l"
     while true; do
@@ -184,7 +184,7 @@ advanced_settings() {
   if [ "$var_os" == "debian" ]; then
     var_version=""
     while [ -z "$var_version" ]; do
-      if var_version=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "DEBIAN VERSION" --radiolist "Choose Version" 10 58 2 \
+      if var_version=$(whiptail --backtitle "Proxmox Scripts by TELXEY" --title "DEBIAN VERSION" --radiolist "Choose Version" 10 58 2 \
         "12" "Bookworm" OFF \
         "11" "Bullseye" OFF \
         3>&1 1>&2 2>&3); then
@@ -200,7 +200,7 @@ advanced_settings() {
   if [ "$var_os" == "ubuntu" ]; then
     var_version=""
     while [ -z "$var_version" ]; do
-      if var_version=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "UBUNTU VERSION" --radiolist "Choose Version" 10 58 3 \
+      if var_version=$(whiptail --backtitle "Proxmox Scripts by TELXEY" --title "UBUNTU VERSION" --radiolist "Choose Version" 10 58 3 \
         "24.04" "Noble" OFF \
         "22.04" "Jammy" OFF \
         "20.04" "Focal" OFF \
@@ -319,7 +319,7 @@ advanced_settings() {
     exit-script
   fi
 
-  if BRG=$(whiptail --backtitle "Proxmox VE Helper Scripts" --inputbox "Set a Bridge" 8 58 vmbr0 --title "BRIDGE" 3>&1 1>&2 2>&3); then
+  if BRG=$(whiptail --backtitle "Proxmox Scripts by TELXEY" --inputbox "Set a Bridge" 8 58 vmbr0 --title "BRIDGE" 3>&1 1>&2 2>&3); then
     if [ -z "$BRG" ]; then
       BRG="vmbr0"
       echo -e "${DGN}Using Bridge: ${BGN}$BRG${CL}"
