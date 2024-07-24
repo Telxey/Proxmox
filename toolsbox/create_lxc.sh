@@ -36,7 +36,7 @@ function error_handler() {
 
 # This function displays a spinner.
 function spinner() {
-    local chars="/-\|"
+    local chars="0oooo o0ooo oo0oo ooo0o oooo0"
     local spin_i=0
     printf "\e[?25l"
     while true; do
