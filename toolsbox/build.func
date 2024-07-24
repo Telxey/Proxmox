@@ -628,8 +628,8 @@ EOF
         pct exec "$CTID" -- /bin/sh -c 'cat <<EOF >/etc/apk/repositories
 https://dl-cdn.alpinelinux.org/alpine/latest-stable/main
 https://dl-cdn.alpinelinux.org/alpine/latest-stable/community
-http://dl-cdn.alpinelinux.org/alpine/v3.20/main
-http://dl-cdn.alpinelinux.org/alpine/v3.20/community
+#http://dl-cdn.alpinelinux.org/alpine/v3.20/main
+#http://dl-cdn.alpinelinux.org/alpine/v3.20/community
 EOF'
     pct exec "$CTID" -- ash -c "apk add bash >/dev/null"
   fi
