@@ -67,7 +67,7 @@ fi
 
 start
 build_container
-# description
+description
 
 # This function sets the description of the container.
 description() {
