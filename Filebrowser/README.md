@@ -1,6 +1,6 @@
 # To Install 
 
-    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/Filebrowser/instal)"
+    bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/Filebrowser/install)"
 
 # To update 
 
