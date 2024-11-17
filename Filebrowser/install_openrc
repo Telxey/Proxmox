@@ -104,19 +104,21 @@ start_pre() {
 start() {
     ebegin "Starting ${APP}"
     start-stop-daemon --start --make-pidfile --pidfile ${pidfile} --background --exec ${command} -- ${command_args}
-    eend $?
+    eend \$?
 }
 
 stop() {
     ebegin "Stopping ${APP}"
     start-stop-daemon --stop --pidfile ${pidfile}
-    eend $?
+    eend \$?
 }
 EOF
 
+# Ensure the service script is executable
 chmod +x /etc/init.d/filebrowser
+
+# Add the service to the default runlevel
 rc-update add filebrowser default
-service filebrowser start
 msg_ok "Created Service"
 
 msg_ok "Completed Successfully!\n"
