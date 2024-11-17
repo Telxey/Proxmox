@@ -4,7 +4,7 @@
 
     bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/Filebrowser/install)"
 
-### On Openrc system ( Alpine )    
+### On Openrc systems ( Alpine )    
 
     bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/Filebrowser/install_openrc)"
 
