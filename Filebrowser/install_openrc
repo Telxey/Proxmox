@@ -116,6 +116,7 @@ EOF
 
 chmod +x /etc/init.d/filebrowser
 rc-update add filebrowser default
+service filebrowser start
 msg_ok "Created Service"
 
 msg_ok "Completed Successfully!\n"
