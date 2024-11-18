@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# Function to display header information
 function header_info {
     clear
     cat <<"EOF"
@@ -12,14 +13,15 @@ function header_info {
 EOF
 }
 
+# Get the first IP address from hostname
 IP=$(hostname -I | awk '{print $1}')
-YW=$(echo "\033[33m")
-BL=$(echo "\033[36m")
-RD=$(echo "\033[01;31m")
-BGN=$(echo "\033[4;92m")
-GN=$(echo "\033[1;92m")
-DGN=$(echo "\033[32m")
-CL=$(echo "\033[m")
+YW="\033[33m"
+BL="\033[36m"
+RD="\033[01;31m"
+BGN="\033[4;92m"
+GN="\033[1;92m"
+DGN="\033[32m"
+CL="\033[m"
 BFR="\\r\\033[K"
 HOLD="-"
 CM="${GN}✓${CL}"
@@ -28,13 +30,15 @@ hostname="$(hostname)"
 
 header_info
 
+# Check if FileBrowser is already installed
 if [ -f /root/filebrowser.db ]; then
     read -r -p "Would you like to uninstall ${APP} on $hostname? <y/N> " prompt
     if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
+        # Stop and remove the service if installed
         /etc/init.d/filebrowser stop
         rc-update delete filebrowser
         rm -rf /usr/local/bin/filebrowser /root/filebrowser.db /etc/init.d/filebrowser
-        echo "$APP Removed"
+        echo "$APP removed"
         sleep 2
         clear
         exit
@@ -44,6 +48,7 @@ if [ -f /root/filebrowser.db ]; then
     fi
 fi
 
+# Confirm with the user to proceed with installation
 while true; do
     read -p "This will install ${APP} on $hostname. Proceed (y/n)? " yn
     case $yn in
@@ -55,29 +60,43 @@ done
 
 header_info
 
+# Function to display messages
 function msg_info() {
     local msg="$1"
     echo -ne " ${HOLD} ${YW}${msg}..."
 }
 
+# Function to display success messages
 function msg_ok() {
     local msg="$1"
     echo -e "${BFR} ${CM} ${GN}${msg}${CL}"
 }
 
+# Ask user if they want to use No Authentication
 read -r -p "Would you like to use No Authentication? <y/N> " prompt
 
+# Install FileBrowser
 msg_info "Installing ${APP}"
-apt-get install -y curl &>/dev/null
+
+# Install curl if not already installed
+if ! command -v curl &> /dev/null; then
+    echo -e "${YW}curl is required to install ${APP}. Installing curl...${CL}"
+    apk add --no-cache curl &>/dev/null
+fi
+
+# Download and install FileBrowser
 curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 
+# Configure FileBrowser based on authentication preference
 if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
+    # Configure for no authentication
     filebrowser config init -a '0.0.0.0' &>/dev/null
     filebrowser config set -a '0.0.0.0' &>/dev/null
     filebrowser config init --auth.method=noauth &>/dev/null
     filebrowser config set --auth.method=noauth &>/dev/null
     filebrowser users add ID 1 --perm.admin &>/dev/null  
 else
+    # Configure with authentication
     filebrowser config init -a '0.0.0.0' &>/dev/null
     filebrowser config set -a '0.0.0.0' &>/dev/null
     filebrowser users add admin admin --perm.admin &>/dev/null
@@ -85,33 +104,54 @@ fi
 
 msg_ok "Installed ${APP} on $hostname"
 
+# Create OpenRC service
 msg_info "Creating Service"
 cat <<EOF >/etc/init.d/filebrowser
-#!/sbin/openrc-run
+#!/bin/bash
 
-command=/usr/local/bin/filebrowser
-command_args="-r /"
-pidfile=/run/filebrowser.pid
+PIDFILE="/run/filebrowser.pid"
+LOGFILE="/var/log/filebrowser.log"
 
-depend() {
-    after net
-}
+case "$1" in
+    start)
+        echo "Starting FileBrowser..."
+        if [ -f "$PIDFILE" ]; then
+            echo "[Warning] FileBrowser is already running..."
+            exit 1
+        fi
 
-start_pre() {
-    checkpath --directory --mode 0755 /run
-}
+        # Start the daemon
+        /usr/local/bin/filebrowser -r / --port 8080 >> "$LOGFILE" 2>&1 &
+        echo $! > "$PIDFILE"
+        echo "[OK] FileBrowser started..."
+        ;;
 
-start() {
-    ebegin "Starting ${APP}"
-    start-stop-daemon --start --make-pidfile --pidfile ${pidfile} --background --exec ${command} -- ${command_args}
-    eend \$?
-}
+    stop)
+        echo "Stopping FileBrowser..."
+        if [ ! -f "$PIDFILE" ]; then
+            echo "[Stop] FileBrowser is not running "
+            exit 1
+        fi
 
-stop() {
-    ebegin "Stopping ${APP}"
-    start-stop-daemon --stop --pidfile ${pidfile}
-    eend \$?
-}
+        # Stop the daemon
+        kill "$(cat "$PIDFILE")"
+        rm -f "$PIDFILE"
+        echo "[Stopped] FileBrowser stopped."
+        ;;
+
+    status)
+        if [ -f "$PIDFILE" ]; then
+            echo "[Running] FileBrowser is running..."
+        else
+            echo "[Stopped] FileBrowser is stopped."
+        fi
+        ;;
+
+    *)
+        echo "Usage: $0 {start|stop|status}"
+        exit 1
+        ;;
+esac
 EOF
 
 # Ensure the service script is executable
@@ -121,5 +161,28 @@ chmod +x /etc/init.d/filebrowser
 rc-update add filebrowser default
 msg_ok "Created Service"
 
+# Completion message
 msg_ok "Completed Successfully!\n"
-echo -e "${APP} should be reachable by going to the following URL.\n         ${BL}$IP:8080${CL} \n"
+echo -e "${APP} should be reachable by going to the following URL.\n         ${BL}$IP:8080${CL}\n"
+
+# Suggest to start the service immediately
+read -r -p "Would you like to start the ${APP} service now? <Y/n> " start_prompt
+start_prompt=${start_prompt:-y}
+if [[ "${start_prompt,,}" =~ ^(y|yes)$ ]]; then
+    if rc-service filebrowser start; then
+        msg_ok "${APP} service started."
+    else
+        echo -e "${RD}Failed to start ${APP} service. Please check for errors above.${CL}"
+    fi
+fi
+
+# Suggest to restart the network service if needed
+read -r -p "Would you like to restart the network service now? (recommended) <Y/n> " restart_network_prompt
+restart_network_prompt=${restart_network_prompt:-y}
+if [[ "${restart_network_prompt,,}" =~ ^(y|yes)$ ]]; then
+    if rc-service networking restart; then
+        msg_ok "Network service restarted successfully."
+    else
+        echo -e "${RD}Failed to restart network service. Please check for errors.${CL}"
+    fi
+fi
