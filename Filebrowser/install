@@ -62,7 +62,7 @@ function msg_ok() {
 read -r -p "Would you like to use No Authentication? <y/N> " prompt
 msg_info "Installing ${APP}"
 apt-get install -y curl &>/dev/null
-curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
+curl -fsSL -o /root/get.sh https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 
 if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
   filebrowser config init -a '0.0.0.0' &>/dev/null
