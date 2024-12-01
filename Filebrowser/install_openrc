@@ -216,7 +216,6 @@ echo -e ${BL} - Password: ${GN}admin${CL}
 echo -e ${YW}Use the following commands to manage the FileBrowser service:${CL}
 echo -e ${BL} - To start the service:     ${WT} rc-service filebrowser start${CL}
 echo -e ${BL} - To stop the service:      ${WT} rc-service filebrowser stop${CL}
-echo -e ${BL} - To restart the service:   ${WT} rc-service filebrowserr restart${CL}
 echo -e ${BL} - To status the service:    ${WT} rc-service filebrowser status${CL}
 exit
 
