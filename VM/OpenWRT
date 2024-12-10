@@ -394,7 +394,6 @@ function start_script() {
 }
 
 arch_check
-pve_check
 ssh_check
 start_script
 
