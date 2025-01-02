@@ -35,8 +35,6 @@ HOLD="-"
 CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 set -Eeo pipefail
-trap 'error_handler $LINENO "$BASH_COMMAND"' ERR
-trap cleanup EXIT
 
 function error_handler() {
   local exit_code="$?"
@@ -44,6 +42,13 @@ function error_handler() {
   local command="$2"
   local error_message="${RD}[ERROR]${CL} in line ${RD}$line_number${CL}: exit code ${RD}$exit_code${CL}: while executing command ${YW}$command${CL}"
   echo -e "\n$error_message\n"
+
+  # Log detailed error information
+  echo -e "${YW}Debugging Information:${CL}"
+  echo -e "VMID: ${VMID}"
+  echo -e "VM Status: $(qm status $VMID 2>/dev/null || echo "Not found")"
+  echo -e "Disk Configuration: $(qm config $VMID | grep -E 'efidisk0|scsi0')"
+  echo -e "Proxmox Logs: $(tail -n 10 /var/log/pve/tasks/active)"
 
   # Ask the user if they want to delete the VM on failure
   if (whiptail --backtitle "Telxey Proxmox Scripts" --title "ERROR" --yesno "An error occurred. Do you want to delete the VM (ID: $VMID)?" 10 58); then
@@ -139,5 +144,8 @@ function send_line_to_vm() {
   done
   qm sendkey $VMID ret
 }
+
+# Disable cleanup during critical operations
+trap - ERR EXIT
 
 # Rest of the script remains unchanged...
