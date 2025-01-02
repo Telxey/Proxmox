@@ -431,7 +431,7 @@ msg_info "Getting URL for OpenWrt Disk Image"
 
 response=$(curl -s https://openwrt.org)
 stableversion=$(echo "$response" | sed -n 's/.*Current stable release - OpenWrt \([0-9.]\+\).*/\1/p')
-URL="https://downloads.openwrt.org/releases/$stableversion/targets/armsr/armv8/openwrt-$stableversion-generic-ext4-combined.img.gz"
+URL="https://downloads.openwrt.org/releases/$stableversion/targets/armsr/armv8/openwrt-$stableversion-armsr-armv8-generic-ext4-combined.img.gz"
 
 sleep 2
 msg_ok "${CL}${BL}${URL}${CL}"
