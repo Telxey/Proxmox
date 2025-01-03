@@ -8,15 +8,15 @@ set -euo pipefail
 # Color definitions
 bold=$(echo -en "\e[1m")
 dim=$(echo -en "\e[2m")
-blink=$(echo -en "\e[5m")
 reverse=$(echo -en "\e[7m")
 hidden=$(echo -en "\e[8m")
 normal=$(echo -en "\e[0m")
 blue=$(echo -en "\e[34m")
 red=$(echo -en "\e[31m")
 green=$(echo -en "\e[32m")
-orange=$(echo -en "\e[33m")
+orange=$(echo -en "\033[38;5;202m"")
 lightblue=$(echo -en "\e[94m")
+lightyellow=$(echo -en "\033[38;5;184m")
 lightaqua=$(echo -en "\e[96m")
 white=$(echo -en "\e[97m")
 default=$(echo -en "\e[39m")
@@ -196,11 +196,6 @@ cleanup_ceph() {
 
 # Main execution
 clear
-msg_info "Checking root"
-sleep 2
-check_root
-msg_ok "Good to GO ..."
-sleep 2
 
 clear
 show_warning_banner
@@ -213,9 +208,15 @@ select yn in "Yes" "No"; do
         No ) echo "${red}Installation canceled${normal}"; exit;;
     esac
 done
+sleep 5
+msg_info "Checking root"
+sleep 2
+check_root
+msg_ok "Good to GO ..."
+sleep 2
 show_ceph_banner
 echo "${dim}${white}Author: ${green}${bold}TELXEY ${normal}"
-echo "${lightyellow}Hello${green} Today is: ${lightpurple} `date` "
+echo "${lightyellow}Hello${green} Today is: ${lightblue} `date` "
 echo "${normal}"
 echo "${white}${underline}"
 echo "${normal}"
