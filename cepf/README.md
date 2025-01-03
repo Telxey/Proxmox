@@ -19,7 +19,7 @@
 
  run this one click auto clean script 
 
-    bash -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/cepf/clean.sh)"
+    bash -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/cepf/clean)"
 
 
 -  Thanks for using this Script
