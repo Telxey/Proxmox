@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+
 # Copyright (c) 2021-2024 Telxey
 # Author: TELXEY (Rax)
 # License: MIT
@@ -8,10 +9,17 @@ set -euo pipefail
 bold=$(echo -en "\e[1m")
 dim=$(echo -en "\e[2m")
 blink=$(echo -en "\e[5m")
+reverse=$(echo -en "\e[7m")
+hidden=$(echo -en "\e[8m")
 normal=$(echo -en "\e[0m")
+blue=$(echo -en "\e[34m")
 red=$(echo -en "\e[31m")
 green=$(echo -en "\e[32m")
 orange=$(echo -en "\e[33m")
+lightblue=$(echo -en "\e[94m")
+lightaqua=$(echo -en "\e[96m")
+white=$(echo -en "\e[97m")
+default=$(echo -en "\e[39m")
 YW=$(echo "\033[33m")
 BL=$(echo "\033[36m")
 RD=$(echo "\033[01;31m")
@@ -24,7 +32,52 @@ CROSS="${RD}✗${CL}"
 BFR="\\r\\033[K"
 HOLD="-"
 
-# Banner function
+# Message functions
+msg_info() {
+    local msg="$1"
+    echo -ne " ${HOLD} ${YW}${msg}...${CL}"
+}
+
+msg_ok() {
+    local msg="$1"
+    echo -e "${BFR} ${CM} ${GN}${msg}${CL}"
+}
+
+msg_error() {
+    local msg="$1"
+    echo -e "${BFR} ${CROSS} ${RD}${msg}${CL}"
+}
+
+# Interactive spinner
+spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr='|/-\'
+    while ps a | awk '{print $1}' | grep -q "$pid"; do
+        local temp=${spinstr#?}
+        printf " [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+# Execute command with spinner
+exec_with_spinner() {
+    local cmd="$1"
+    local msg="$2"
+    msg_info "$msg"
+    eval "$cmd" &>/dev/null &
+    spinner $!
+    if [ $? -eq 0 ]; then
+        msg_ok "$msg completed"
+    else
+        msg_error "$msg failed"
+    fi
+}
+
+# Banner functions
 show_banner() {
     local text="$1"
     local color="$2"
@@ -38,6 +91,10 @@ show_banner() {
 show_warning_banner() {
     echo "${red}${bold}${blink}"
     cat <<"EOF"
+
+
+
+
          ██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗ ██████╗ 
          ██║    ██║██╔══██╗██╔══██╗████╗  ██║██║██╔════╝ 
          ██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██║  ███╗
@@ -46,50 +103,105 @@ show_warning_banner() {
           ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝ ╚═════╝ 
 EOF
     echo "${normal}"
-    show_banner "DANGER: This script will remove all Ceph components" "${red}"
+    echo "${red}${bold}"
+    cat <<"EOF"
+
+    This is Proxmox cluster ceph cleaner Script due full clean
+    wipea and remove all ceph storage funsion file and posible loss 
+    sensitive data, Make sure backup you data, before to continue
+EOF
+    echo "${normal}"
 }
 
 show_ceph_banner() {
     echo "${orange}"
     cat <<"EOF"
-        ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
-       ▒██▀ ▀█  ▓█   ▀▓██░  ██ ▒▓██        ▒██▀ ▀█  ▓██▒    ▓█   ▀▒████▄    ██ ▀█   █  ▓█   ▀▓██ ▒ ██▒
-       ▒▓█    ▄ ▒███  ▓██░ ██▓▒░▒████      ▒▓█    ▄ ▒██░    ▒███  ▒██  ▀█▄ ▓██  ▀█ ██▒ ▒███  ▓██ ░▄█ ▒
-       ▒▓▓▄ ▄██ ▒▓█  ▄▒██▄█▓▒ ▒░░▓█▒       ▒▓▓▄ ▄██ ▒██░    ▒▓█  ▄░██▄▄▄▄██▓██▒  ▐▌██▒ ▒▓█  ▄▒██▀▀█▄  
-       ▒ ▓███▀ ▒░▒████▒██▒ ░  ░ ░▒█░       ▒ ▓███▀ ▒░██████▒░▒████▒▓█   ▓██▒██░   ▓██░▒░▒████░██▓ ▒██▒
-       ░ ░▒ ▒  ░░░ ▒░ ▒▓▒░ ░  ░  ▒ ░       ░ ░▒ ▒  ░░ ▒░▓  ░░░ ▒░ ░▒▒   ▓▒█░ ▒░   ▒ ▒ ░░░ ▒░ ░ ▒▓ ░▒▓░
-         ░  ▒  ░ ░ ░  ░▒ ░       ░           ░  ▒  ░░ ░ ▒  ░ ░ ░  ░ ░   ▒▒ ░ ░░   ░ ▒░░ ░ ░    ░▒ ░ ▒ 
-       ░           ░  ░░         ░ ░       ░          ░ ░      ░    ░   ▒     ░   ░ ░     ░    ░░   ░ 
-       ░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
+ ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
+▒██▀ ▀█  ▓█   ▀▓██░  ██ ▒▓██        ▒██▀ ▀█  ▓██▒    ▓█   ▀▒████▄    ██ ▀█   █  ▓█   ▀▓██ ▒ ██▒
+▒▓█    ▄ ▒███  ▓██░ ██▓▒░▒████      ▒▓█    ▄ ▒██░    ▒███  ▒██  ▀█▄ ▓██  ▀█ ██▒ ▒███  ▓██ ░▄█ ▒
+▒▓▓▄ ▄██ ▒▓█  ▄▒██▄█▓▒ ▒░░▓█▒       ▒▓▓▄ ▄██ ▒██░    ▒▓█  ▄░██▄▄▄▄██▓██▒  ▐▌██▒ ▒▓█  ▄▒██▀▀█▄  
+▒ ▓███▀ ▒░▒████▒██▒ ░  ░ ░▒█░       ▒ ▓███▀ ▒░██████▒░▒████▒▓█   ▓██▒██░   ▓██░▒░▒████░██▓ ▒██▒
+░ ░▒ ▒  ░░░ ▒░ ▒▓▒░ ░  ░  ▒ ░       ░ ░▒ ▒  ░░ ▒░▓  ░░░ ▒░ ░▒▒   ▓▒█░ ▒░   ▒ ▒ ░░░ ▒░ ░ ▒▓ ░▒▓░
+  ░  ▒  ░ ░ ░  ░▒ ░       ░           ░  ▒  ░░ ░ ▒  ░ ░ ░  ░ ░   ▒▒ ░ ░░   ░ ▒░░ ░ ░    ░▒ ░ ▒ 
+░           ░  ░░         ░ ░       ░          ░ ░      ░    ░   ▒     ░   ░ ░     ░    ░░   ░ 
+░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
 EOF
     echo "${normal}"
 }
 
-show_progress_banner() {
-    local step="$1"
-    local total="$2"
-    show_banner "Progress: Step $step of $total" "${green}"
+# Check root
+check_root() {
+    if [[ "$(id -u)" -ne 0 || $(ps -o comm= -p $PPID) == "sudo" ]]; then
+        clear
+        msg_error "Please run this script as root."
+        echo -e "\nExiting..."
+        sleep 2
+        exit
+    fi
 }
 
-# [Previous spinner and exec_with_spinner functions remain the same]
+# Check Proxmox version
+pve_check() {
+    if [ $(pveversion | grep "pve-manager/8" | wc -l) -ne 1 ]; then
+        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox --title "Proxmox VE 7 Detected" "You are currently using Proxmox VE 7 (EOL 2024-07), refrain from creating Debian 12 LXCs." 10 60
+    fi
+    if ! pveversion | grep -Eq "pve-manager/(7\.[0-9]|8\.[0-9])"; then
+        msg_error "This version of Proxmox Virtual Environment is not supported"
+        echo -e "Requires PVE Version 7.0 or higher"
+        echo -e "Exiting..."
+        sleep 2
+        exit
+    fi
+}
 
+# Main cleanup function
 cleanup_ceph() {
     local total_steps=7
     local current_step=1
 
-    show_progress_banner $current_step $total_steps
-    # Stop services with visual feedback
+    # Stop services
+    show_banner "Step 1: Stopping Ceph Services" "${blue}"
     for service in "ceph-mon" "ceph-mgr" "ceph-mds" "ceph-osd"; do
         exec_with_spinner "systemctl stop $service.target" "Stopping $service"
-        ((current_step++))
-        show_progress_banner $current_step $total_steps
     done
 
-    # [Previous cleanup steps remain the same but add progress banners]
-    show_banner "Cleanup Complete" "${green}"
+    # Remove systemd files
+    show_banner "Step 2: Removing Systemd Files" "${blue}"
+    exec_with_spinner "rm -rf /etc/systemd/system/ceph*" "Removing systemd files"
+    exec_with_spinner "systemctl daemon-reload" "Reloading systemd"
+
+    # Remove libraries
+    show_banner "Step 3: Removing Ceph Libraries" "${blue}"
+    exec_with_spinner "rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/" "Removing Ceph libraries"
+
+    # Purge packages
+    show_banner "Step 4: Purging Ceph Packages" "${blue}"
+    exec_with_spinner "pveceph purge" "Purging pveCeph"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get purge -y ceph-mon ceph-osd ceph-mgr ceph-mds ceph-base ceph-mgr-modules-core" "Purging Ceph packages"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get remove -y ceph-common ceph-fuse" "Removing Ceph components"
+
+    # Remove configs
+    show_banner "Step 5: Removing Configurations" "${blue}"
+    exec_with_spinner "rm -rf /etc/ceph/* /etc/pve/ceph.conf /etc/pve/priv/ceph.*" "Removing configurations"
+
+    # System cleanup
+    show_banner "Step 6: System Cleanup" "${blue}"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get autoremove -y" "Running autoremove"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get clean" "Cleaning apt cache"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get autoclean" "Auto-cleaning packages"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get update" "Updating package lists"
+
+    show_banner "Ceph Cleanup Complete!" "${green}"
 }
 
 # Main execution
+clear
+msg_info "Checking root"
+sleep 2
+check_root
+msg_ok "Good to GO ..."
+sleep 2
+
 clear
 show_warning_banner
 show_ceph_banner
@@ -103,4 +215,10 @@ select yn in "Yes" "No"; do
     esac
 done
 
-# [Rest of the main execution remains the same]
+msg_info "Checking Proxmox Installations"
+pve_check
+msg_ok "Proxmox is running"
+msg_info "Loading Script"
+msg_ok "Script loaded"
+
+cleanup_ceph
