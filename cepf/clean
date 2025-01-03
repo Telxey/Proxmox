@@ -169,8 +169,8 @@ cleanup_ceph() {
     # Stop services
     show_banner "Step 1: Stopping Ceph Services" "${blue}"
     for service in "ceph-mon" "ceph-mgr" "ceph-mds" "ceph-osd"; do
-        exec_with_progress "systemctl stop $service.target" "Stopping $service"
-    done
+    exec_with_progress "systemctl stop $service.target" "Stopping $service"
+
 
     # Remove systemd files
     show_banner "Step 2: Removing Systemd Files" "${blue}"
@@ -222,18 +222,14 @@ select yn in "Yes" "No"; do
 done
 
 clear
-sleep 2
 show_ceph_banner
-echo "${dim}${white}Author: ${green}${bold}TELXEY ${normal}"
-echo "${lightyellow}Hello${green} Today is: ${lightpurple} $(date) "
-echo "${normal}"
-echo "${white}${underline}"
+echo -e "${dim}${white}Author: ${green}${bold}TELXEY${normal}\n"
+echo -e "${lightyellow}Hello${green} Today is: ${lightpurple}$(date '+%a %b %-d %I:%M:%S %p %Z %Y')${normal}\n"
+echo -e "${underline}\n"
 echo "${normal}"
 
-sleep 5
 echo "${green}            Start Cleaning ${orange}Ceph"
 echo "${normal}"
-sleep 5
 
 msg_info "Checking Proxmox Installations"
 pve_check
@@ -242,3 +238,6 @@ msg_info "Loading Script"
 msg_ok "Script loaded"
 
 cleanup_ceph
+
+echo -e "\n${green}${bold}Cleanup completed successfully!${normal}"
+echo -e "╭─root@$(hostname) ${blue}~${normal}"
