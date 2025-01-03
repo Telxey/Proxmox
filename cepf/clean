@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Color definitions [previous color definitions remain the same]
+
+# Banner function
+show_banner() {
+    local text="$1"
+    local color="$2"
+    echo -e "${color}${bold}"
+    echo "============================================================"
+    echo "$text"
+    echo "============================================================"
+    echo -e "${normal}"
+}
+
+show_warning_banner() {
+    echo "${red}${bold}${blink}"
+    cat <<"EOF"
+         ██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗ ██████╗ 
+         ██║    ██║██╔══██╗██╔══██╗████╗  ██║██║██╔════╝ 
+         ██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██║  ███╗
+         ██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║   ██║
+         ╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║╚██████╔╝
+          ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝ ╚═════╝ 
+EOF
+    echo "${normal}"
+    show_banner "DANGER: This script will remove all Ceph components" "${red}"
+}
+
+show_ceph_banner() {
+    echo "${orange}"
+    cat <<"EOF"
+        ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
+       ▒██▀ ▀█  ▓█   ▀▓██░  ██ ▒▓██        ▒██▀ ▀█  ▓██▒    ▓█   ▀▒████▄    ██ ▀█   █  ▓█   ▀▓██ ▒ ██▒
+       ▒▓█    ▄ ▒███  ▓██░ ██▓▒░▒████      ▒▓█    ▄ ▒██░    ▒███  ▒██  ▀█▄ ▓██  ▀█ ██▒ ▒███  ▓██ ░▄█ ▒
+       ▒▓▓▄ ▄██ ▒▓█  ▄▒██▄█▓▒ ▒░░▓█▒       ▒▓▓▄ ▄██ ▒██░    ▒▓█  ▄░██▄▄▄▄██▓██▒  ▐▌██▒ ▒▓█  ▄▒██▀▀█▄  
+       ▒ ▓███▀ ▒░▒████▒██▒ ░  ░ ░▒█░       ▒ ▓███▀ ▒░██████▒░▒████▒▓█   ▓██▒██░   ▓██░▒░▒████░██▓ ▒██▒
+       ░ ░▒ ▒  ░░░ ▒░ ▒▓▒░ ░  ░  ▒ ░       ░ ░▒ ▒  ░░ ▒░▓  ░░░ ▒░ ░▒▒   ▓▒█░ ▒░   ▒ ▒ ░░░ ▒░ ░ ▒▓ ░▒▓░
+         ░  ▒  ░ ░ ░  ░▒ ░       ░           ░  ▒  ░░ ░ ▒  ░ ░ ░  ░ ░   ▒▒ ░ ░░   ░ ▒░░ ░ ░    ░▒ ░ ▒ 
+       ░           ░  ░░         ░ ░       ░          ░ ░      ░    ░   ▒     ░   ░ ░     ░    ░░   ░ 
+       ░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
+EOF
+    echo "${normal}"
+}
+
+show_progress_banner() {
+    local step="$1"
+    local total="$2"
+    show_banner "Progress: Step $step of $total" "${green}"
+}
+
+# [Previous spinner and exec_with_spinner functions remain the same]
+
+cleanup_ceph() {
+    local total_steps=7
+    local current_step=1
+
+    show_progress_banner $current_step $total_steps
+    # Stop services with visual feedback
+    for service in "ceph-mon" "ceph-mgr" "ceph-mds" "ceph-osd"; do
+        exec_with_spinner "systemctl stop $service.target" "Stopping $service"
+        ((current_step++))
+        show_progress_banner $current_step $total_steps
+    done
+
+    # [Previous cleanup steps remain the same but add progress banners]
+    show_banner "Cleanup Complete" "${green}"
+}
+
+# Main execution
+clear
+show_warning_banner
+show_ceph_banner
+
+echo "${orange}${bold}Do you wish to continue removing Ceph?"
+echo "${green}For continue press 1 ${white}${bold} or ${red}For cancel press 2 ${normal}"
+select yn in "Yes" "No"; do
+    case $yn in
+        Yes ) break;;
+        No ) echo "${red}Installation canceled${normal}"; exit;;
+    esac
+done
+
+# [Rest of the main execution remains the same]
