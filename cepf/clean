@@ -32,7 +32,8 @@ CM="${GN}✓${CL}"
 CROSS="${RD}✗${CL}"
 BFR="\\r\\033[K"
 HOLD="-"
-underline="\e[4m"
+underline=$(echo "\e[4m")
+
 
 # Progress bar function
 progress_bar() {
