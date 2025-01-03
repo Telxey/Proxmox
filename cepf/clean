@@ -203,11 +203,11 @@ cleanup_ceph() {
 
 # Main execution
 clear
-sleep 5
 msg_info "Checking root"
-sleep 2
+sleep 5
 check_root
 msg_ok "Good to GO ..."
+sleep 5
 
 clear
 show_warning_banner
