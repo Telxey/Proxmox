@@ -163,14 +163,14 @@ pve_check() {
 
 # Main cleanup function
 cleanup_ceph() {
-    local total_steps=7
-    local current_step=1
-
     # Stop services
     show_banner "Step 1: Stopping Ceph Services" "${blue}"
-    for service in "ceph-mon" "ceph-mgr" "ceph-mds" "ceph-osd"; do
-    exec_with_progress "systemctl stop $service.target" "Stopping $service"
+    local services=("ceph-mon" "ceph-mgr" "ceph-mds" "ceph-osd")
+    for service in "${services[@]}"; do
+        exec_with_progress "systemctl stop $service.target" "Stopping $service"
+    done
 
+    # Rest of cleanup steps
 
     # Remove systemd files
     show_banner "Step 2: Removing Systemd Files" "${blue}"
