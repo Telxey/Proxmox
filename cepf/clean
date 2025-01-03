@@ -204,7 +204,6 @@ sleep 2
 
 clear
 show_warning_banner
-show_ceph_banner
 
 echo "${orange}${bold}Do you wish to continue removing Ceph?"
 echo "${green}For continue press 1 ${white}${bold} or ${red}For cancel press 2 ${normal}"
@@ -214,7 +213,12 @@ select yn in "Yes" "No"; do
         No ) echo "${red}Installation canceled${normal}"; exit;;
     esac
 done
-
+show_ceph_banner
+echo "${dim}${white}Author: ${green}${bold}TELXEY ${normal}"
+echo "${lightyellow}Hello${green} Today is: ${lightpurple} `date` "
+echo "${normal}"
+echo "${white}${underline}"
+echo "${normal}"
 msg_info "Checking Proxmox Installations"
 pve_check
 msg_ok "Proxmox is running"
