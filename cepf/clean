@@ -143,7 +143,7 @@ check_root() {
 # Check Proxmox version
 pve_check() {
     if [ $(pveversion | grep "pve-manager/8" | wc -l) -ne 1 ]; then
-        whiptail --backtitle "Proxmox VE Helper Scripts" --msgbox --title "Proxmox VE 7 Detected" "You are currently using Proxmox VE 7 (EOL 2024-07), refrain from creating Debian 12 LXCs." 10 60
+        whiptail --backtitle "Telxey Proxmox Scripts" --msgbox --title "Proxmox VE 7 Detected" "You are currently using Proxmox VE 7 (EOL 2024-07), refrain from creating Debian 12 LXCs." 10 60
     fi
     if ! pveversion | grep -Eq "pve-manager/(7\.[0-9]|8\.[0-9])"; then
         msg_error "This version of Proxmox Virtual Environment is not supported"
@@ -171,21 +171,21 @@ cleanup_ceph() {
     exec_with_spinner "systemctl daemon-reload" "Reloading systemd"
 
     # Remove libraries
-    show_banner "Step 3: Removing Ceph Libraries" "${blue}"
+    show_banner "Step 3: Removing Ceph Libraries" "${lightblue}"
     exec_with_spinner "rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/" "Removing Ceph libraries"
 
     # Purge packages
-    show_banner "Step 4: Purging Ceph Packages" "${blue}"
+    show_banner "Step 4: Purging Ceph Packages" "${lightblue}"
     exec_with_spinner "pveceph purge" "Purging pveCeph"
     exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get purge -y ceph-mon ceph-osd ceph-mgr ceph-mds ceph-base ceph-mgr-modules-core" "Purging Ceph packages"
     exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get remove -y ceph-common ceph-fuse" "Removing Ceph components"
 
     # Remove configs
-    show_banner "Step 5: Removing Configurations" "${blue}"
+    show_banner "Step 5: Removing Configurations" "${lightblue}"
     exec_with_spinner "rm -rf /etc/ceph/* /etc/pve/ceph.conf /etc/pve/priv/ceph.*" "Removing configurations"
 
     # System cleanup
-    show_banner "Step 6: System Cleanup" "${blue}"
+    show_banner "Step 6: System Cleanup" "${lightblue}"
     exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get autoremove -y" "Running autoremove"
     exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get clean" "Cleaning apt cache"
     exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get autoclean" "Auto-cleaning packages"
@@ -196,6 +196,11 @@ cleanup_ceph() {
 
 # Main execution
 clear
+sleep 5
+msg_info "Checking root"
+sleep 2
+check_root
+msg_ok "Good to GO ..."
 
 clear
 show_warning_banner
@@ -208,11 +213,7 @@ select yn in "Yes" "No"; do
         No ) echo "${red}Installation canceled${normal}"; exit;;
     esac
 done
-sleep 5
-msg_info "Checking root"
-sleep 2
-check_root
-msg_ok "Good to GO ..."
+clear
 sleep 2
 show_ceph_banner
 echo "${dim}${white}Author: ${green}${bold}TELXEY ${normal}"
@@ -220,6 +221,12 @@ echo "${lightyellow}Hello${green} Today is: ${lightblue} `date` "
 echo "${normal}"
 echo "${white}${underline}"
 echo "${normal}"
+
+sleep 5
+echo "${green}            Start Cleaning ${orange}Ceph"
+echo "${normal}"
+sleep 5
+
 msg_info "Checking Proxmox Installations"
 pve_check
 msg_ok "Proxmox is running"
