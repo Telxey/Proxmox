@@ -165,10 +165,11 @@ pve_check() {
 cleanup_ceph() {
     # Stop services
     show_banner "Step 1: Stopping Ceph Services" "${blue}"
-    exec_with_progress "systemctl stop ceph-mon.target" "Stopping ceph-mon"
-    exec_with_progress "systemctl stop ceph-mgr.target" "Stopping ceph-mgr"
-    exec_with_progress "systemctl stop ceph-mds.target" "Stopping ceph-mds"
-    exec_with_progress "systemctl stop ceph-osd.target" "Stopping ceph-osd"
+    systemctl stop ceph-mon.target &>/dev/null && msg_ok "ceph-mon stopped"
+    systemctl stop ceph-mgr.target &>/dev/null && msg_ok "ceph-mgr stopped"
+    systemctl stop ceph-mds.target &>/dev/null && msg_ok "ceph-mds stopped"
+    systemctl stop ceph-osd.target &>/dev/null && msg_ok "ceph-osd stopped"
+
     # Rest of cleanup steps
 
     # Remove systemd files
