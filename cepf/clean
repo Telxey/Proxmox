@@ -284,4 +284,3 @@ msg_ok "Script loaded"
 cleanup_ceph
 
 echo -e "\n${green}${bold}Cleanup completed successfully!${normal}"
-echo -e "╭─root@$(hostname) ${blue}~${normal}"
