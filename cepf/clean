@@ -52,6 +52,35 @@ progress_bar() {
     echo
 }
 
+# Interactive spinner
+spinner() {
+    local pid=$1
+    local delay=0.1
+    local spinstr='|, /, -, \'
+    while ps a | awk '{print $1}' | grep -q "$pid"; do
+        local temp=${spinstr#?}
+        printf  "  [%c]  " "$spinstr"
+        local spinstr=$temp${spinstr%"$temp"}
+        sleep $delay
+        printf "\b\b\b\b\b\b"
+    done
+    printf "    \b\b\b\b"
+}
+
+# Execute command with spinner
+exec_with_spinner() {
+    local cmd="$1"
+    local msg="$2"
+    msg_info "$msg"
+    eval "$cmd" &>/dev/null &
+    spinner $!
+    if [ $? -eq 0 ]; then
+        msg_ok "$msg completed"
+    else
+        msg_error "$msg failed"
+    fi
+}
+
 # Message functions
 msg_info() {
     local msg="$1"
@@ -86,43 +115,57 @@ exec_with_progress() {
 
 # Banner functions
 show_banner() {
-    local text="$1"
-    local color="$2"
-    echo -e "${color}${bold}"
-    echo "============================================================"
-    echo "$text"
-    echo "============================================================"
-    echo -e "${normal}"
+   local text="$1"
+   local color="$2"
+   local textcolor="${3:-$color}"  # Optional third param for text color
+   local width=60
+   local padding=$(( (width - ${#text}) / 2 ))
+   
+   echo -e "${color}${bold}"
+   echo "============================================================"
+   echo -ne "${color}"; printf '%*s' $padding ""
+   echo -ne "${textcolor}${text}${color}"
+   echo
+   echo "============================================================"
+   echo -e "${normal}"
 }
 
+# Usage example:
+show_banner "Step 1: Stopping Ceph Services" "${blue}" "${orange}"
+
+
 show_warning_banner() {
-    echo "${red}${bold}"
-    cat <<"EOF"
-
-
-
-
+    local banner="
          ██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗ ██████╗ 
          ██║    ██║██╔══██╗██╔══██╗████╗  ██║██║██╔════╝ 
          ██║ █╗ ██║███████║██████╔╝██╔██╗ ██║██║██║  ███╗
          ██║███╗██║██╔══██║██╔══██╗██║╚██╗██║██║██║   ██║
          ╚███╔███╔╝██║  ██║██║  ██║██║ ╚████║██║╚██████╔╝
-          ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝ ╚═════╝ 
-EOF
-    echo "${normal}"
-    echo "${red}${bold}"
+          ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝ ╚═════╝"
+
+    for ((i=0; i<9; i++)); do
+        clear
+        echo -e "${red}${bold}${banner}${normal}"
+        sleep 0.5
+        clear
+        sleep 0.5
+    done
+    
+    echo -e "${red}${bold}${banner}${normal}"
     cat <<"EOF"
 
-    This is Proxmox cluster ceph cleaner Script due full clean
-    wipea and remove all ceph storage funsion file and posible loss 
-    sensitive data, Make sure backup you data, before to continue
+    ⚠️  WARNING: This will completely remove your Ceph installation
+    All Ceph storage and configuration will be permanently deleted
+    Please ensure you have backups before continuing
 EOF
     echo "${normal}"
 }
 
+
 show_ceph_banner() {
     echo "${orange}"
     cat <<"EOF"
+    
  ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
 ▒██▀ ▀█  ▓█   ▀▓██░  ██ ▒▓██        ▒██▀ ▀█  ▓██▒    ▓█   ▀▒████▄    ██ ▀█   █  ▓█   ▀▓██ ▒ ██▒
 ▒▓█    ▄ ▒███  ▓██░ ██▓▒░▒████      ▒▓█    ▄ ▒██░    ▒███  ▒██  ▀█▄ ▓██  ▀█ ██▒ ▒███  ▓██ ░▄█ ▒
@@ -163,40 +206,40 @@ pve_check() {
 
 # Main cleanup function
 cleanup_ceph() {
-    # Stop services
-    show_banner "Step 1: Stopping Ceph Services" "${blue}"
-    systemctl stop ceph-mon.target &>/dev/null && msg_ok "ceph-mon stopped"
-    systemctl stop ceph-mgr.target &>/dev/null && msg_ok "ceph-mgr stopped"
-    systemctl stop ceph-mds.target &>/dev/null && msg_ok "ceph-mds stopped"
-    systemctl stop ceph-osd.target &>/dev/null && msg_ok "ceph-osd stopped"
+    local total_steps=7
+    local current_step=1
 
-    # Rest of cleanup steps
+    # Stop services
+    show_banner "Step 1: Stopping Ceph Services" "${lightblue}" "${orange}"
+    for service in "ceph-mon" "ceph-mgr" "ceph-mds" "ceph-osd"; do
+        exec_with_spinner "systemctl stop $service.target" "Stopping $service"
+    done
 
     # Remove systemd files
-    show_banner "Step 2: Removing Systemd Files" "${lightblue}"
-    exec_with_progress "rm -rf /etc/systemd/system/ceph*" "Removing systemd files"
-    exec_with_progress "systemctl daemon-reload" "Reloading systemd"
+    show_banner "Step 2: Removing Systemd Files" "${lightblue}" "${orange}"
+    exec_with_spinner "rm -rf /etc/systemd/system/ceph*" "Removing systemd files"
+    exec_with_spinner "systemctl daemon-reload" "Reloading systemd"
 
     # Remove libraries
-    show_banner "Step 3: Removing Ceph Libraries" "${lightblue}"
-    exec_with_progress "rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/" "Removing Ceph libraries"
+    show_banner "Step 3: Removing Ceph Libraries" "${blue}" "${orange}"
+    exec_with_spinner "rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/" "Removing Ceph libraries"
 
     # Purge packages
-    show_banner "Step 4: Purging Ceph Packages" "${lightblue}"
-    exec_with_progress "pveceph purge" "Purging pveCeph"
-    exec_with_progress "DEBIAN_FRONTEND=noninteractive apt-get purge -y ceph-mon ceph-osd ceph-mgr ceph-mds ceph-base ceph-mgr-modules-core" "Purging Ceph packages"
-    exec_with_progress "DEBIAN_FRONTEND=noninteractive apt-get remove -y ceph-common ceph-fuse" "Removing Ceph components"
+    show_banner "Step 4: Purging Ceph Packages" "${blue}" "${orange}"
+    exec_with_spinner "pveceph purge" "Purging pveCeph"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get purge -y ceph-mon ceph-osd ceph-mgr ceph-mds ceph-base ceph-mgr-modules-core" "Purging Ceph packages"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get remove -y ceph-common ceph-fuse" "Removing Ceph components"
 
     # Remove configs
-    show_banner "Step 5: Removing Configurations" "${lightblue}"
-    exec_with_progress "rm -rf /etc/ceph/* /etc/pve/ceph.conf /etc/pve/priv/ceph.*" "Removing configurations"
+    show_banner "Step 5: Removing Configurations" "${blue}" "${orange}"
+    exec_with_spinner "rm -rf /etc/ceph/* /etc/pve/ceph.conf /etc/pve/priv/ceph.*" "Removing configurations"
 
     # System cleanup
-    show_banner "Step 6: System Cleanup" "${lightblue}"
-    exec_with_progress "DEBIAN_FRONTEND=noninteractive apt-get autoremove -y" "Running autoremove"
-    exec_with_progress "DEBIAN_FRONTEND=noninteractive apt-get clean" "Cleaning apt cache"
-    exec_with_progress "DEBIAN_FRONTEND=noninteractive apt-get autoclean" "Auto-cleaning packages"
-    exec_with_progress "DEBIAN_FRONTEND=noninteractive apt-get update" "Updating package lists"
+    show_banner "Step 6: System Cleanup" "${blue}" "${orange}"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get autoremove -y" "Running autoremove"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get clean" "Cleaning apt cache"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get autoclean" "Auto-cleaning packages"
+    exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get update" "Updating package lists"
 
     show_banner "Ceph Cleanup Complete!" "${green}"
 }
