@@ -223,12 +223,20 @@ pveceph purge &>  /dev/null
 apt purge -y ceph-mon ceph-osd ceph-mgr ceph-mds &> /dev/null;  progress-bar 50
 apt purge -y ceph-base ceph-mgr-modules-core &> /dev/null; progress-bar 50
 msg_ok "Purged"
+msg_info "Purge Ceph from system"
+apt remove -y ceph-common ceph-fuse &> /dev/null; progress-bar 50
+msg_ok "Full Ceph removed"
 msg_info "Removing Configurations"
-msg_info "Type Y to renove CEPH Files"
+msg_info "Type Y to renove Ceph Files"
 rm -rf /etc/ceph/*
 rm -rf /etc/pve/ceph.conf
 rm -rf /etc/pve/priv/ceph.*
-msg_ok "OK"
+msg_ok "Configs Removed"
+msg_info "Final System Cleanup & Updated"
+apt autoremove -y  &> /dev/null; progress-bar 10
+apt clean  &> /dev/null; progress-bar 5
+apt autoclean  &> /dev/null; progress-bar 5
+apt update  &> /dev/null; progress-bar 10
 msg_ok "Process Complete"
 
 
