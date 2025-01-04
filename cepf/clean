@@ -4,6 +4,15 @@ set -euo pipefail
 # Copyright (c) 2021-2024 Telxey
 # Author: TELXEY (Rax)
 # License: MIT
+# Links
+show_links() {
+    echo "${green}    Links: ${normal}"
+    echo "${orange}    ====== ${normal}"
+    echo "${lightblue}${bold}    Support:        ${green}https://github.com/Telxey/Proxmox/issues ${normal}"
+    echo "${lightblue}${bold}    Repository:     ${green}https://github.com/Telxey/Proxmox ${normal}"
+    echo "${lightblue}${bold}    License:        ${green}https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE ${normal}"
+}
+
 
 # Color definitions
 bold=$(echo -en "\e[1m")
@@ -59,7 +68,7 @@ spinner() {
     local spinstr='|, /, -, \'
     while ps a | awk '{print $1}' | grep -q "$pid"; do
         local temp=${spinstr#?}
-        printf  "  [%c]  " "$spinstr"
+        printf "  [%c]  " "$spinstr"
         local spinstr=$temp${spinstr%"$temp"}
         sleep $delay
         printf "\b\b\b\b\b\b"
@@ -205,6 +214,31 @@ pve_check() {
     fi
 }
 
+# Info
+show_outro() {
+   echo "${white}" "${bold}"
+   cat << EOF
+       Thank you for trying this script out.
+
+EOF
+   echo "${normal}"
+   sleep 5
+}
+
+# Support Project
+show_support() {
+   echo "${orange}${bold}"
+   cat << "EOF"
+   Support the Project:
+   ==========================================
+EOF
+   echo "${normal}${dim}"
+   cat << "EOF"
+           🔗 Buy Me a Coffee: https://www.buymeacoffee.com/telxey
+EOF
+   echo "${normal}"
+}
+
 # Main cleanup function
 cleanup_ceph() {
     local total_steps=7
@@ -242,7 +276,7 @@ cleanup_ceph() {
     exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get autoclean" "Auto-cleaning packages"
     exec_with_spinner "DEBIAN_FRONTEND=noninteractive apt-get update" "Updating package lists"
 
-    show_banner "Ceph Cleanup Complete!" "${green}"
+    show_banner "Ceph Cleanup Complete!" "${green}" "${lightyellow}"
 }
 
 # Main execution
@@ -282,5 +316,9 @@ msg_info "Loading Script"
 msg_ok "Script loaded"
 
 cleanup_ceph
+show_outro
+show_links
+show_support
+
 
 echo -e "\n${green}${bold}Cleanup completed successfully!${normal}"
