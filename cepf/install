@@ -7,6 +7,7 @@ curl -o /etc/ceph/ceph.conf https://raw.githubusercontent.com/Telxey/Proxmox/mai
 chown ceph:ceph /etc/ceph/ceph.conf
 chmod 644 /etc/ceph/ceph.conf
 
+ln -s /etc/pve/ceph.conf /etc/ceph/ceph.conf
 # Update
 apt update
 
@@ -23,5 +24,7 @@ systemctl restart ceph-mgr.target
 systemctl restart ceph.target
 
 # Verify the cluster status
+ls -l /etc/pve/ceph.conf
+ls -l /etc/ceph/ceph.conf
 dpkg -l | grep ceph
 ceph -s
