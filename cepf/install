@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Download the ceph.conf file
+curl -o /etc/ceph/ceph.conf https://raw.githubusercontent.com/Telxey/Proxmox/main/cepf/ceph.conf
+
+# Set correct permissions
+chown ceph:ceph /etc/ceph/ceph.conf
+chmod 644 /etc/ceph/ceph.conf
+
+# Update
+apt update
+
+# Install the specific version from ceph-squid
+apt install -y ceph=19.2.0-pve2 ceph-common=19.2.0-pve2 ceph-base=19.2.0-pve2 ceph-mgr=19.2.0-pve2 ceph-mds=19.2.0-pve2 ceph-osd=19.2.0-pve2 ceph-volume=19.2.0-pve2 ceph-mon=19.2.0-pve2 ceph-mgr-dashboard=19.2.0-pve2
+apt install -y python3-pip python3-wheel 
+apt install -y radosgw
+echo 'PYTHON_PATH="/usr/lib/python3/dist-packages"' >> /etc/default/ceph
+chown -R ceph:ceph /usr/share/ceph/mgr/
+
+# Restart Ceph services
+systemctl restart ceph-mon.target
+systemctl restart ceph-mgr.target
+systemctl restart ceph.target
+
+# Verify the cluster status
+dpkg -l | grep ceph
+ceph -s
