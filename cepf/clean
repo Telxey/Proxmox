@@ -257,7 +257,7 @@ cleanup_ceph() {
 
     # Remove libraries
     show_banner "Step 3: Removing Ceph Libraries" "${blue}" "${orange}"
-    exec_with_spinner "rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/" "Removing Ceph libraries"
+    exec_with_spinner "rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/ /var/lib/ceph/crash/posted/*(N)" "Removing Ceph libraries"
 
     # Purge packages
     show_banner "Step 4: Purging Ceph Packages" "${blue}" "${orange}"
