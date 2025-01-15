@@ -95,10 +95,10 @@ else
 fi
 OUTPUT=$(cat /etc/*release)
 OS=$(cat /etc/*-release | grep -Po "(?<=^ID=).+" | sed 's/"//g')
-NAME=$(cat /etc/*-release | grep -E "PRETTY_NAME" | cut -d = -f 2 | tr -d '"')
+NAME=$(awk -F= '/PRETTY_NAME/ {print $2}' /etc/*-release | tr -d '"' | sort -u)
 HS=$(hostname)
 ARCH=$(uname -m)
-LOCAL_IP=$(hostname -I | tr ' ' '\n' | grep -v '127.0.0.1')
+LOCAL_IP=$(ip addr show | grep -E 'inet ' | grep -v '127.0.0.1' | awk '{ print $2 }' | cut -d'/' -f1)
 EXT_IP=$(curl -4 icanhazip.com)
 EXT_IPv6=$(curl -6 icanhazip.com)
 if echo "$OUTPUT" | grep -q "Orange Pi" ; then
@@ -126,8 +126,8 @@ EOF
 
 echo -e "${CL}"
 echo -e "${GN}                   User ${RD} ---> ${WHT}${UL}$(whoami)${CL} ${RD}<---${CL}${GRN} running script${CL}"
-echo -e "${GRN}${BOLD}   Runimg Supported OS${RED}:${CLE}"
-echo -e "${RED}          $OS${ORG} $NAME ${LBL}$ARCH ${CLE}"
+echo -e "${GRN}${BOLD}   Runimg Supported OS${WHT}:${RED}$OS${CLE}"
+echo -e "${ORG}               $NAME ${LBL}$ARCH ${CLE}"
 echo -e "${WHT}${BOLD}   ====================================================================${CL}"
 echo -e "${LBL}                  DETECTED ${WHT}${UL}$(whoami)${CL} ${LBL} RUN THIS SCRIPT                    ${CL}"
 echo -e "${LBL}          PLEASE DONT USE${RED} sudo${LBL}, USE${GRN} su ${CL}${LBL}TO LOGIN TO THE ROOT USER  ${CL}"
@@ -136,8 +136,9 @@ echo -e "${LBL}           IF YOU ARE USING SUDO SCRIPT FAIL ON NEXT STEP        
 echo -e "${WHT}${BOLD}   ====================================================================${CL}"
 
 echo -e "${CL}${WHT}   Hostname${RED}: ${GRN}$HS ${CL}"
-echo -e "${CL}${WHT}   Eternal IP${RED}: ${GRN}$EXT_IP ${WHT}Eternal IPv6${RED}: ${GRN}$EXT_IPv6${CL}"
 echo -e "${CL}${WHT}   Local IP${RED}:${GRN} $LOCAL_IP ${CL}"
+echo -e "${CL}${WHT}   Eternal IP${RED}: ${GRN}$EXT_IP ${CL}"
+echo -e "${CL}${WHT}   IPv6${RED}: ${GRN}$EXT_IPv6${CL}"
 echo -e "${CL}"
 #read -r -p "Would you like exit to login as  root now ? ( if you are root hit enter ) <y/N> " prompt
 echo -e "${YLW}Would you like exit to login as  root now ? type y or  if you are root hit ${GN}${UL}ENTER${CL}" 
