@@ -204,7 +204,7 @@ apt full-upgrade -y  &>  /dev/null
 msg_ok "System Upgraded"
 sleep 5
 msg_info "instaling Basic Tools"
-apt install -y duf btop curl nano gnupg ca-certificates wiringpi &> /dev/null
+apt install -y duf btop curl nano gnupg ca-certificates wiringpi dnsutils net-tools &> /dev/null
 msg_ok "Basic Tools Installed"
 msg_info "stoped and removed unused services and configurations"
 systemctl stop docker &> /dev/null
