@@ -192,7 +192,7 @@ sleep 3
 check_root
 msg_ok "Good root detected loading setup ..."
 msg_info "check for updates"
-rm -f /etc/apt/sources.list.d/docker.list
+rm -f /etc/apt/sources.list.d/docker.list &> /dev/nul
 apt update &> /dev/null
 sleep 3
 msg_ok "System Updated"
