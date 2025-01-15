@@ -126,7 +126,7 @@ EOF
 
 echo -e "${CL}"
 echo -e "${GN}                   User ${RD} ---> ${WHT}${UL}$(whoami)${CL} ${RD}<---${CL}${GRN} running script${CL}"
-echo -e "${GRN}${BOLD}   Runimg Supported OS${WHT}:${RED}$OS${CLE}"
+echo -e "${GRN}${BOLD}      Runimg Supported OS${WHT}:${RED} $OS${CLE}"
 echo -e "${ORG}               $NAME ${LBL}$ARCH ${CLE}"
 echo -e "${WHT}${BOLD}   ====================================================================${CL}"
 echo -e "${LBL}                  DETECTED ${WHT}${UL}$(whoami)${CL} ${LBL} RUN THIS SCRIPT                    ${CL}"
@@ -243,11 +243,9 @@ apt-get -y -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confnew
 msg_ok "Proxmox Installed sucess"
 msg_info "Preconfigure Post Install"
 apt autoremove -y &> /dev/null
-sed -i '1 s/^/#/' /etc/apt/sources.list.d/pveport.list
-#echo "deb [arch=arm64] https://mirrors.apqa.cn/proxmox/debian/pve bookworm port" | tee  /etc/apt/sources.list.d/pveport.list &> /dev/null
-echo << EOF >> /etc/apt/sources.list.d/pveport.list 
-deb [arch=arm64] https://mirrors.apqa.cn/proxmox/debbian/pve bookworm port
-EOF
+sed -i '1 s/^/#/' /etc/apt/sources.list.d/armbian-config.list &> /dev/null
+sed -i '1 s/^/#/' /etc/apt/sources.list.d/armbian.list &> /dev/null
+echo "deb [signed-by=/usr/share/keyrings/armbian.gpg] http://apt.armbian.com bookworm main bookworm-utils" | sh -c 'cat >> /etc/apt/sources.list.d/armbian.list' &> /dev/null
 apt update &> /dev/null
 apt upgrade -y &> /dev/null
 apt install -y dnsmasq &> /dev/nell
@@ -268,7 +266,9 @@ printf "
 
     For External access to PVE interface set route to be reachable here :
       --->  $GRN https://$EXT_IP:8006/ $CLE <---
-         
+
+    For IPv6 access to PVE interface set route to be reachable here :
+      --->  $GRN https://$EXT_IPv6:8006/ $CLE <---
          run ---> $YLW apt upgrade -y $CLE <---
 
            in a root shell to complete the installation.
