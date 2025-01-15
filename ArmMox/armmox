@@ -130,7 +130,7 @@ echo -e "${GRN}${BOLD}      Runimg Supported OS${WHT}:${RED} $OS${CLE}"
 echo -e "${ORG}               $NAME ${LBL}$ARCH ${CLE}"
 echo -e "${WHT}${BOLD}   ====================================================================${CL}"
 echo -e "${LBL}                  DETECTED ${WHT}${UL}$(whoami)${CL} ${LBL} RUN THIS SCRIPT                    ${CL}"
-echo -e "${LBL}          PLEASE DONT USE${RED} sudo${LBL}, USE${GRN} su ${CL}${LBL}TO LOGIN TO THE ROOT USER  ${CL}"
+echo -e "${LBL}          PLEASE DONT USE${RED} sudo${LBL}, USE${GRN} su ${CL}${LBL}OR${GRN} sudo -i ${CL}TO LOGIN TO THE ROOT USER  ${CL}"
 echo -e "${LBL}             PLEASE STOP THIS SCRIPT YOU ARE USING SUDO                                        ${CL}"
 echo -e "${LBL}           IF YOU ARE USING SUDO SCRIPT FAIL ON NEXT STEP                                      ${CL}"
 echo -e "${WHT}${BOLD}   ====================================================================${CL}"
@@ -144,7 +144,7 @@ echo -e "${CL}"
 echo -e "${YLW}Would you like exit to login as  root now ? type y or  if you are root hit ${GN}${UL}ENTER${CL}" 
 read -r -p "Select Yes or No  <y/N> " prompt
 if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
-    echo -e "${GRN}Run ${WHT}${DIM}${BOLD}${UL}su${CLE}${GRN} for switch to ${WHT}${BOLD}root${CLE}"
+    echo -e "${GRN}Run ${WHT}${DIM}${BOLD}${UL}su${CLE}${GRN} or ${WHT}${DIM}${BOLD}${UL}sudo -i ${CLE}${GRN}for switch to ${WHT}${BOLD}root${CLE}"
     exit 1
 fi
 read -r -p "Would you like to add set root Password now ?( If no hit enter ) <y/N> " prompt
@@ -178,7 +178,7 @@ EOF
 echo -e "${GRN}${BOLD}Collect some basic information on your system, you appear to be running:${CLE} "
 echo -e "${YLW}"
 echo -e "          --  OS Name                $(cat /etc/*-release | grep -Po "(?<=^ID=).+" | sed 's/"//g')"
-echo -e "          --  Description            $(cat /etc/*-release | grep -E "PRETTY_NAME" | cut -d = -f 2 | tr -d '"')"
+echo -e "          --  Description            $(cat /etc/*-release | grep -E "PRETTY_NAME" | cut -d = -f 2 | tr -d '"' | sort -u )"
 echo -e "          --  OS Version release     $(cat /etc/*-release | grep -E "VERSION_ID" | cut -d = -f 2 | tr -d '"')"
 echo -e "          --  Code Name              $(cat /etc/*-release | grep -E "VERSION_CODENAME" | cut -d = -f 2 | tr -d '"')"
 echo -e "${CLE}"
@@ -219,7 +219,7 @@ apt autoremove -y &> /dev/null
 msg_ok "system cleanup sucess"
 
 msg_info "Remove autologin"
-sed -i -e 's/--autologin orangepi//g' /usr/lib/systemd/system/getty@.service.d/override.conf
+sed -i -e 's/--autologin orangepi//g' /usr/lib/systemd/system/getty@.service.d/override.conf &> /dev/null
 sudo systemctl daemon-reload &> /dev/null
 msg_ok "autologin Stoped"
 
