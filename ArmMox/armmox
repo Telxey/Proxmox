@@ -98,8 +98,9 @@ OS=$(cat /etc/*-release | grep -Po "(?<=^ID=).+" | sed 's/"//g')
 NAME=$(cat /etc/*-release | grep -E "PRETTY_NAME" | cut -d = -f 2 | tr -d '"')
 HS=$(hostname)
 ARCH=$(uname -m)
-LOCAL_IP=$(ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p')
-EXT_IP=$(dig @resolver4.opendns.com myip.opendns.com +short)
+LOCAL_IP=$(hostname -I | tr ' ' '\n' | grep -v '127.0.0.1')
+EXT_IP=$(curl -4 icanhazip.com)
+EXT_IPv6=$(curl -6 icanhazip.com)
 if echo "$OUTPUT" | grep -q "Orange Pi" ; then
                 export  SERVER_OS="Orange Pi"
 
@@ -130,10 +131,11 @@ echo -e "${WHT}${BOLD}   =======================================================
 echo -e "${LBL}                  DETECTED ${WHT}${UL}$(whoami)${CL} ${LBL} RUN THIS SCRIPT                    ${CL}"
 echo -e "${LBL}          PLEASE DONT USE${RED} sudo${LBL}, USE${GRN} su ${CL}${LBL}TO LOGIN TO THE ROOT USER  ${CL}"
 echo -e "${LBL}             PLEASE STOP THIS SCRIPT YOU ARE USING SUDO                                        ${CL}"
-echo -e "${LBL}           IF YOU ARE USING SUDO SCRIPT FAIL ON NEXT STEP PLEASE                               ${CL}"
+echo -e "${LBL}           IF YOU ARE USING SUDO SCRIPT FAIL ON NEXT STEP                                      ${CL}"
 echo -e "${WHT}${BOLD}   ====================================================================${CL}"
 
-echo -e "${CL}${WHT}   Hostname${RED}: ${GRN}$HS ${WHT}Local IP${RED}:${GRN} $LOCAL_IP ${WHT} Eternal IP${RED}: ${GRN}$EXT_IP${CL}"
+echo -e "${CL}${WHT}   Eternal IP${RED}: ${GRN}$EXT_IP ${WHT}Eternal IPv6${RED}: ${GRN}$EXT_IPv6${CL}"
+echo -e "${CL}${WHT}   Hostname${RED}: ${GRN}$HS ${WHT}Local IP${RED}:${GRN} $LOCAL_IP ${CL}"
 echo -e "${CL}"
 #read -r -p "Would you like exit to login as  root now ? ( if you are root hit enter ) <y/N> " prompt
 echo -e "${YLW}Would you like exit to login as  root now ? type y or  if you are root hit ${GN}${UL}ENTER${CL}" 
