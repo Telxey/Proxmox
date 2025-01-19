@@ -1,7 +1,10 @@
 </p>
-<img align="left" width="240" height="240" src="https://github.com/Telxey/Proxmox/assets/131807761/909846c0-fdbb-43b4-9ee5-0f938eed40ac"> 
-<img align="center" width="240" height="240" src="https://ceph.io/assets/bitmaps/Ceph_Logo_Stacked_RGB_Reversed_120411_fa.png">
+<img align="left" width="250" height="250" src="https://github.com/Telxey/Proxmox/assets/131807761/909846c0-fdbb-43b4-9ee5-0f938eed40ac"> 
+<img align="center" width="220" height="220" src="https://github.com/user-attachments/assets/c79f015d-21e3-4a9c-986e-d3573c55b3b4">
 </p>
+
+
+.
 
 ##  <span style='color: red;'>Ceph</span> on <span style='color: red;'>Proxmox</span>
 #### This is a customized spript to full remove Cepf from Proxmox 
@@ -19,8 +22,13 @@
 
  run this one click auto clean script 
 
+ ######  ( Bash Version )
+
     bash -c "$(wget -qLO - https://raw.githubusercontent.com/Telxey/Proxmox/main/cepf/clean)"
 
+ ######  ( Python3 Version )
+
+    python3 <(curl -sSL https://raw.githubusercontent.com/Telxey/Proxmox/main/cepf/clean.py)
 
 -  Thanks for using this Script
 
