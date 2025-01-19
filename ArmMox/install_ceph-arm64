@@ -65,9 +65,6 @@ install_ceph_packages() {
         ceph-volume=$ceph_version \
         ceph-mon=$ceph_version \
         ceph-mgr-dashboard=$ceph_version \
-        ceph-mgr-cephadm=$ceph_version \
-        ceph-mgr-cephadm \
-        cephadm \
         radosgw \
         python3-pip \
         python3-wheel \
@@ -83,21 +80,35 @@ install_ceph_packages() {
     ssh "$host" "chown -R ceph:ceph /usr/share/ceph/mgr/"
 }
 
+# Function to initialize the Ceph cluster
+initialize_ceph_cluster() {
+    local mon_host=$1
+    local fsid=$2
+
+    echo -e "${YELLOW}Initializing Ceph cluster on $mon_host...${NC}"
+    ssh "$mon_host" "cephadm bootstrap --mon-ip $mon_host --fsid $fsid"
+
+    echo -e "${YELLOW}Waiting for the cluster to start...${NC}"
+    sleep 10
+    ssh "$mon_host" "ceph -s"
+}
+
 # Function to create and distribute admin keyring
 create_admin_keyring() {
     local nodes=("$@")
+    local mon_host=$1
 
     echo -e "${YELLOW}Creating admin keyring...${NC}"
-    ceph auth get client.admin -o /etc/ceph/ceph.client.admin.keyring
-    chown ceph:ceph /etc/ceph/ceph.client.admin.keyring
-    chmod 600 /etc/ceph/ceph.client.admin.keyring
+    ssh "$mon_host" "ceph auth get client.admin -o /etc/ceph/ceph.client.admin.keyring"
+    ssh "$mon_host" "chown ceph:ceph /etc/ceph/ceph.client.admin.keyring"
+    ssh "$mon_host" "chmod 600 /etc/ceph/ceph.client.admin.keyring"
 
     echo -e "${YELLOW}Linking admin keyring to Proxmox location...${NC}"
-    cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph.client.admin.keyring
+    ssh "$mon_host" "cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph.client.admin.keyring"
 
     echo -e "${YELLOW}Distributing admin keyring to nodes...${NC}"
     for node in "${nodes[@]}"; do
-        scp /etc/ceph/ceph.client.admin.keyring "$node:/etc/ceph/ceph.client.admin.keyring"
+        scp "$mon_host:/etc/ceph/ceph.client.admin.keyring" "$node:/etc/ceph/ceph.client.admin.keyring"
         ssh "$node" "chown ceph:ceph /etc/ceph/ceph.client.admin.keyring"
         ssh "$node" "chmod 600 /etc/ceph/ceph.client.admin.keyring"
     done
@@ -106,29 +117,16 @@ create_admin_keyring() {
 # Function to create and distribute bootstrap keyring
 create_bootstrap_keyring() {
     local nodes=("$@")
+    local mon_host=$1
 
     echo -e "${YELLOW}Creating bootstrap-osd keyring...${NC}"
-    ceph-authtool --create-keyring /etc/pve/priv/ceph.client.bootstrap-osd.keyring --gen-key -n client.bootstrap-osd --cap mon 'allow profile bootstrap-osd'
+    ssh "$mon_host" "ceph-authtool --create-keyring /etc/pve/priv/ceph.client.bootstrap-osd.keyring --gen-key -n client.bootstrap-osd --cap mon 'allow profile bootstrap-osd'"
 
     echo -e "${YELLOW}Distributing bootstrap-osd keyring to nodes...${NC}"
     for node in "${nodes[@]}"; do
-        scp /etc/pve/priv/ceph.client.bootstrap-osd.keyring "$node:/etc/pve/priv/ceph.client.bootstrap-osd.keyring"
+        scp "$mon_host:/etc/pve/priv/ceph.client.bootstrap-osd.keyring" "$node:/etc/pve/priv/ceph.client.bootstrap-osd.keyring"
         ssh "$node" "chown ceph:ceph /etc/pve/priv/ceph.client.bootstrap-osd.keyring"
     done
-}
-
-# Function to initialize the Ceph cluster
-initialize_ceph_cluster() {
-    local nodes=("$@")
-    local fsid=$1
-    local mon_hosts=$2
-
-    echo -e "${YELLOW}Initializing Ceph cluster...${NC}"
-    cephadm bootstrap --mon-ip "$mon_hosts" --fsid "$fsid"
-
-    echo -e "${YELLOW}Waiting for the cluster to start...${NC}"
-    sleep 10
-    ceph -s
 }
 
 # Function to create OSDs
@@ -165,7 +163,7 @@ create_osds() {
         osd_id=$(ssh "$node" "ceph-volume lvm list --format=json" | jq -r '.[] | select(.devices[] == "'$disk'") | .tags["ceph.osd_id"]')
         if [[ -n $osd_id ]]; then
             echo -e "${GREEN}Tagging OSD $osd_id as $disk_type...${NC}"
-            ceph osd crush set-device-class "$disk_type" "$osd_id"
+            ssh "$node" "ceph osd crush set-device-class $disk_type $osd_id"
         else
             echo -e "${RED}Failed to find OSD ID for disk $disk on $node.${NC}"
         fi
@@ -174,59 +172,57 @@ create_osds() {
     # Verify OSDs are up
     echo -e "${YELLOW}Waiting for OSDs to come up...${NC}"
     sleep 10
-    ceph osd status
+    ssh "$mon_host" "ceph osd status"
 }
 
 # Function to configure RGW
 configure_rgw() {
     local nodes=("$@")
+    local mon_host=$1
 
     # Create RGW pool
     echo -e "${YELLOW}Creating RGW pool...${NC}"
-    ceph osd pool create rgw.data 32 32
-    ceph osd pool application enable rgw.data rgw
+    ssh "$mon_host" "ceph osd pool create rgw.data 32 32"
+    ssh "$mon_host" "ceph osd pool application enable rgw.data rgw"
 
     # Generate RGW keys
-    RGW_access_key=$(openssl rand -hex 16)
-    RGW_secret_key=$(openssl rand -hex 32)
+    RGW_access_key=$(ssh "$mon_host" "openssl rand -hex 16")
+    RGW_secret_key=$(ssh "$mon_host" "openssl rand -hex 32")
 
     # Create RGW user
     echo -e "${YELLOW}Creating RGW user...${NC}"
-    radosgw-admin user create --uid=s3admin \
-        --display-name="S3 Admin" \
-        --access-key="$RGW_access_key" \
-        --secret-key="$RGW_secret_key"
+    ssh "$mon_host" "radosgw-admin user create --uid=s3admin --display-name='S3 Admin' --access-key='$RGW_access_key' --secret-key='$RGW_secret_key'"
 
     # Configure RGW in dashboard
     echo -e "${YELLOW}Configuring RGW in dashboard...${NC}"
-    ceph config-key set mgr/dashboard/RGW_API_ACCESS_KEY "$RGW_access_key"
-    ceph config-key set mgr/dashboard/RGW_API_SECRET_KEY "$RGW_secret_key"
-    ceph config-key set mgr/dashboard/RGW_API_SCHEME "https"
-    ceph config-key set mgr/dashboard/RGW_API_HOSTS "$(IFS=, ; echo "${nodes[*]}")"
-    ceph config-key set mgr/dashboard/RGW_API_PORT "7443"
-    ceph config-key set mgr/dashboard/RGW_API_SSL_VERIFY "false"
+    ssh "$mon_host" "ceph config-key set mgr/dashboard/RGW_API_ACCESS_KEY '$RGW_access_key'"
+    ssh "$mon_host" "ceph config-key set mgr/dashboard/RGW_API_SECRET_KEY '$RGW_secret_key'"
+    ssh "$mon_host" "ceph config-key set mgr/dashboard/RGW_API_SCHEME 'https'"
+    ssh "$mon_host" "ceph config-key set mgr/dashboard/RGW_API_HOSTS '$(IFS=, ; echo "${nodes[*]}")'"
+    ssh "$mon_host" "ceph config-key set mgr/dashboard/RGW_API_PORT '7443'"
+    ssh "$mon_host" "ceph config-key set mgr/dashboard/RGW_API_SSL_VERIFY 'false'"
 
     # Add RGW configuration to ceph.conf
     for node in "${nodes[@]}"; do
-        cat <<EOF >> /etc/pve/ceph.conf
+        ssh "$mon_host" "cat <<EOF >> /etc/pve/ceph.conf
 [client.rgw.$node]
     admin_socket = /var/run/ceph/ceph-client.rgw.\$(hostname).asok
-    rgw_frontends = "beast ssl_endpoint=192.168.0.11:7443 ssl_certificate=/etc/ceph/certs/rgw.$node.crt ssl_private_key=/etc/ceph/certs/rgw.$node.key"
-    host = "$node"
+    rgw_frontends = 'beast ssl_endpoint=192.168.0.11:7443 ssl_certificate=/etc/ceph/certs/rgw.$node.crt ssl_private_key=/etc/ceph/certs/rgw.$node.key'
+    host = '$node'
     keyring = /etc/pve/priv/ceph.client.rgw.$node.keyring
     log_file = /var/log/ceph/client.radosgw.\$host.log
-    rgw_enable_apis = "s3"
+    rgw_enable_apis = 's3'
     rgw_thread_pool_size = 256
     rgw_num_rados_handles = 4
     rgw_max_chunk_size = 262144
     rgw_cache_enabled = true
     rgw_cache_lru_size = 10000
-EOF
+EOF"
     done
 
     # Distribute configuration to all nodes
     for node in "${nodes[@]}"; do
-        scp /etc/pve/ceph.conf "$node:/etc/ceph/ceph.conf"
+        scp "$mon_host:/etc/pve/ceph.conf" "$node:/etc/ceph/ceph.conf"
         ssh "$node" "chown ceph:ceph /etc/ceph/ceph.conf"
     done
 
@@ -320,20 +316,20 @@ for node in "${!node_cluster_ips[@]}"; do
     install_ceph_packages "$node"
 done
 
+# Initialize the Ceph cluster
+mon_host="${node_cluster_ips[$(echo "${!node_cluster_ips[@]}" | cut -d' ' -f1)]}"
+initialize_ceph_cluster "$mon_host" "$fsid"
+
 # Create and distribute admin keyring
-create_admin_keyring "${!node_cluster_ips[@]}"
+create_admin_keyring "${!node_cluster_ips[@]}" "$mon_host"
 
 # Create and distribute bootstrap keyring
-create_bootstrap_keyring "${!node_cluster_ips[@]}"
-
-# Initialize the Ceph cluster
-mon_hosts=$(IFS=" " ; echo "${node_cluster_ips[*]}")
-initialize_ceph_cluster "$fsid" "$mon_hosts"
+create_bootstrap_keyring "${!node_cluster_ips[@]}" "$mon_host"
 
 # Create OSDs
 create_osds "${!node_cluster_ips[@]}"
 
 # Configure RGW
-configure_rgw "${!node_cluster_ips[@]}"
+configure_rgw "${!node_cluster_ips[@]}" "$mon_host"
 
 echo -e "${GREEN}Ceph cluster setup completed!${NC}"
