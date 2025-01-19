@@ -157,6 +157,40 @@ create_ceph_conf() {
 EOF
 }
 
+# Function to create and distribute bootstrap keyring
+create_bootstrap_keyring() {
+    local nodes=("$@")
+
+    echo -e "${YELLOW}Creating bootstrap-osd keyring...${NC}"
+    ceph-authtool --create-keyring /etc/pve/priv/ceph.client.bootstrap-osd.keyring --gen-key -n client.bootstrap-osd --cap mon 'allow profile bootstrap-osd'
+
+    echo -e "${YELLOW}Distributing bootstrap-osd keyring to nodes...${NC}"
+    for node in "${nodes[@]}"; do
+        scp /etc/pve/priv/ceph.client.bootstrap-osd.keyring "$node:/etc/pve/priv/ceph.client.bootstrap-osd.keyring"
+        ssh "$node" "chown ceph:ceph /etc/pve/priv/ceph.client.bootstrap-osd.keyring"
+    done
+}
+
+# Function to create and distribute admin keyring
+create_admin_keyring() {
+    local nodes=("$@")
+
+    echo -e "${YELLOW}Creating admin keyring...${NC}"
+    ceph auth get client.admin -o /etc/ceph/ceph.client.admin.keyring
+    chown ceph:ceph /etc/ceph/ceph.client.admin.keyring
+    chmod 600 /etc/ceph/ceph.client.admin.keyring
+
+    echo -e "${YELLOW}Linking admin keyring to Proxmox location...${NC}"
+    cp /etc/ceph/ceph.client.admin.keyring /etc/pve/priv/ceph.client.admin.keyring
+
+    echo -e "${YELLOW}Distributing admin keyring to nodes...${NC}"
+    for node in "${nodes[@]}"; do
+        scp /etc/ceph/ceph.client.admin.keyring "$node:/etc/ceph/ceph.client.admin.keyring"
+        ssh "$node" "chown ceph:ceph /etc/ceph/ceph.client.admin.keyring"
+        ssh "$node" "chmod 600 /etc/ceph/ceph.client.admin.keyring"
+    done
+}
+
 # Function to create OSDs
 create_osds() {
     local nodes=("$@")
@@ -337,6 +371,12 @@ for node in "${!node_cluster_ips[@]}"; do
     scp /etc/pve/ceph.conf "$node:/etc/ceph/ceph.conf"
     ssh "$node" "chown ceph:ceph /etc/ceph/ceph.conf"
 done
+
+# Create and distribute bootstrap keyring
+create_bootstrap_keyring "${!node_cluster_ips[@]}"
+
+# Create and distribute admin keyring
+create_admin_keyring "${!node_cluster_ips[@]}"
 
 # Create OSDs
 create_osds "${!node_cluster_ips[@]}"
