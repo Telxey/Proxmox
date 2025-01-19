@@ -128,62 +128,67 @@ def pve_check():
         msg_error("Failed to check Proxmox version")
         sys.exit(1)
 
+# Execute command with timeout
+def run_command(cmd, timeout=30):
+    try:
+        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout)
+        return True
+    except subprocess.TimeoutExpired:
+        msg_error(f"Command timed out: {' '.join(cmd)}")
+        return False
+    except subprocess.CalledProcessError:
+        msg_error(f"Command failed: {' '.join(cmd)}")
+        return False
+
 # Main cleanup function
 def cleanup_ceph():
     # Stop services
     show_banner("Step 1: Stopping Ceph Services", Colors.LIGHTBLUE, Colors.ORANGE)
     for service in ["ceph-mon", "ceph-mgr", "ceph-mds", "ceph-osd"]:
         msg_info(f"Stopping {service}")
-        try:
-            subprocess.run(["systemctl", "stop", f"{service}.target"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if run_command(["systemctl", "stop", f"{service}.target"]):
             msg_ok(f"Stopped {service}")
-        except subprocess.CalledProcessError:
+        else:
             msg_error(f"Failed to stop {service}")
 
     # Remove systemd files
     show_banner("Step 2: Removing Systemd Files", Colors.LIGHTBLUE, Colors.ORANGE)
     msg_info("Removing systemd files")
-    try:
-        subprocess.run(["rm", "-rf", "/etc/systemd/system/ceph*"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        subprocess.run(["systemctl", "daemon-reload"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if run_command(["rm", "-rf", "/etc/systemd/system/ceph*"]) and run_command(["systemctl", "daemon-reload"]):
         msg_ok("Systemd files removed")
-    except subprocess.CalledProcessError:
+    else:
         msg_error("Failed to remove systemd files")
 
     # Remove libraries
     show_banner("Step 3: Removing Ceph Libraries", Colors.BLUE, Colors.ORANGE)
     msg_info("Removing Ceph libraries")
-    try:
-        subprocess.run(["rm", "-rf", "/var/lib/ceph/mon/", "/var/lib/ceph/mgr/", "/var/lib/ceph/mds/", "/var/lib/ceph/crash/posted/*"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if run_command(["rm", "-rf", "/var/lib/ceph/mon/", "/var/lib/ceph/mgr/", "/var/lib/ceph/mds/", "/var/lib/ceph/crash/posted/*"]):
         msg_ok("Ceph libraries removed")
-    except subprocess.CalledProcessError:
+    else:
         msg_error("Failed to remove Ceph libraries")
 
     # Purge packages
     show_banner("Step 4: Purging Ceph Packages", Colors.BLUE, Colors.ORANGE)
     msg_info("Purging pveCeph")
-    try:
-        subprocess.run(["pveceph", "purge"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if run_command(["pveceph", "purge"]):
         msg_ok("pveCeph purged")
-    except subprocess.CalledProcessError:
+    else:
         msg_error("Failed to purge pveCeph")
 
     # Remove configs
     show_banner("Step 5: Removing Configurations", Colors.BLUE, Colors.ORANGE)
     msg_info("Removing configurations")
-    try:
-        subprocess.run(["rm", "-rf", "/etc/ceph/*", "/etc/pve/ceph.conf", "/etc/pve/priv/ceph.*"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if run_command(["rm", "-rf", "/etc/ceph/*", "/etc/pve/ceph.conf", "/etc/pve/priv/ceph.*"]):
         msg_ok("Configurations removed")
-    except subprocess.CalledProcessError:
+    else:
         msg_error("Failed to remove configurations")
 
     # System cleanup
     show_banner("Step 6: System Cleanup", Colors.BLUE, Colors.ORANGE)
     msg_info("Running autoremove")
-    try:
-        subprocess.run(["apt-get", "autoremove", "-y"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if run_command(["apt-get", "autoremove", "-y"]):
         msg_ok("Autoremove completed")
-    except subprocess.CalledProcessError:
+    else:
         msg_error("Failed to run autoremove")
 
     show_banner("Ceph Cleanup Complete!", Colors.GREEN, Colors.LIGHTYELLOW)
