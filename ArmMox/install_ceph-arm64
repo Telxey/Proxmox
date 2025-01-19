@@ -304,11 +304,15 @@ echo -e "${GREEN}Ceph Cluster Setup Script${NC}"
 declare -A node_cluster_ips
 declare -A node_public_ips
 node_count=1
+
+# Ensure at least 3 nodes are added
 while true; do
-    node=$(prompt "Enter node $node_count name (or 'done' to finish)")
-    if [[ $node == "done" ]]; then
-        break
+    node=$(prompt "Enter node $node_count name (minimum 3 nodes required):")
+    if [[ -z $node ]]; then
+        echo -e "${RED}Node name cannot be empty. Please try again.${NC}"
+        continue
     fi
+
     while true; do
         cluster_ip=$(prompt "Enter cluster IP address for $node")
         if validate_ip "$cluster_ip"; then
@@ -318,6 +322,7 @@ while true; do
             echo -e "${RED}Invalid cluster IP address. Please try again.${NC}"
         fi
     done
+
     while true; do
         public_ip=$(prompt "Enter public IP address for $node")
         if validate_ip "$public_ip"; then
@@ -327,8 +332,23 @@ while true; do
             echo -e "${RED}Invalid public IP address. Please try again.${NC}"
         fi
     done
+
     node_count=$((node_count + 1))
+
+    # Allow adding more nodes after the first 3
+    if [[ $node_count -ge 4 ]]; then
+        add_more=$(prompt "Do you want to add another node? (yes/no)")
+        if [[ $add_more != "yes" ]]; then
+            break
+        fi
+    fi
 done
+
+# Check if at least 3 nodes were added
+if [[ ${#node_cluster_ips[@]} -lt 3 ]]; then
+    echo -e "${RED}Error: At least 3 nodes are required for a Ceph cluster. Exiting...${NC}"
+    exit 1
+fi
 
 # Prompt for cluster and public networks
 while true; do
