@@ -65,6 +65,9 @@ install_ceph_packages() {
         ceph-volume=$ceph_version \
         ceph-mon=$ceph_version \
         ceph-mgr-dashboard=$ceph_version \
+        ceph-mgr-cephadm=$ceph_version \
+        ceph-mgr-cephadm \
+        cephadm \
         radosgw \
         python3-pip \
         python3-wheel \
