@@ -76,99 +76,8 @@ install_ceph_packages() {
         python3-werkzeug \
         python3-requests \
         python3-routes"
-}
-
-# Function to configure Ceph
-configure_ceph() {
-    local host=$1
-    echo -e "${YELLOW}Configuring Ceph on $host...${NC}"
     ssh "$host" "echo 'PYTHON_PATH=\"/usr/lib/python3/dist-packages\"' >> /etc/default/ceph"
     ssh "$host" "chown -R ceph:ceph /usr/share/ceph/mgr/"
-}
-
-# Function to create Ceph configuration
-create_ceph_conf() {
-    local fsid=$1
-    local cluster_network=$2
-    local public_network=$3
-    local mon_hosts=$4
-
-    echo -e "${YELLOW}Creating Ceph configuration...${NC}"
-    cat <<EOF > /etc/pve/ceph.conf
-[global]
-    auth_client_required = cephx
-    auth_cluster_required = cephx
-    auth_service_required = cephx
-    cephx_cluster_require_signatures = true
-    cephx_require_signatures = true
-    cephx_service_require_signatures = true
-    cluster_network = $cluster_network
-    fsid = $fsid
-    mon_allow_pool_delete = true
-    mon_host = $mon_hosts
-    ms_bind_ipv4 = true
-    ms_bind_ipv6 = false
-    osd_memory_target = 4294967296
-    osd_pool_default_min_size = 2
-    osd_pool_default_size = 3
-    public_network = $public_network
-    rbd_cache = true
-    rbd_cache_max_dirty = 67108864
-    rbd_cache_size = 134217728
-    rbd_cache_target_dirty = 33554432
-
-[client]
-    keyring = /etc/pve/priv/\$cluster.\$name.keyring
-    rbd_cache = true
-    rbd_cache_max_dirty = 67108864
-    rbd_cache_size = 134217728
-    rbd_cache_target_dirty = 33554432
-    rbd_cache_writethrough_until_flush = true
-
-[client.crash]
-    keyring = /etc/pve/ceph/\$cluster.\$name.keyring
-
-[client.proxmox]
-    key = /etc/ceph/ceph.client.proxmox.keyring
-
-[mds]
-    keyring = /var/lib/ceph/mds/ceph-\$id/keyring
-
-[mon]
-    mon_data_avail_crit = 5
-    mon_data_avail_warn = 30
-    mon_memory_target = 2147483648
-    mon_osd_max_split_count = 32
-    mon_osd_min_in_ratio = 0.75
-
-[osd]
-    bluestore_cache_size = 3221225472
-    bluestore_cache_size_hdd = 1073741824
-    bluestore_cache_size_ssd = 3221225472
-    osd_max_backfills = 1
-    osd_memory_target_autotune = true
-    osd_op_num_shards = 8
-    osd_op_num_threads_per_shard = 2
-    osd_recovery_max_active = 3
-    osd_recovery_op_priority = 3
-
-[mgr]
-    mgr_initial_modules = dashboard,status,prometheus
-EOF
-}
-
-# Function to create and distribute bootstrap keyring
-create_bootstrap_keyring() {
-    local nodes=("$@")
-
-    echo -e "${YELLOW}Creating bootstrap-osd keyring...${NC}"
-    ceph-authtool --create-keyring /etc/pve/priv/ceph.client.bootstrap-osd.keyring --gen-key -n client.bootstrap-osd --cap mon 'allow profile bootstrap-osd'
-
-    echo -e "${YELLOW}Distributing bootstrap-osd keyring to nodes...${NC}"
-    for node in "${nodes[@]}"; do
-        scp /etc/pve/priv/ceph.client.bootstrap-osd.keyring "$node:/etc/pve/priv/ceph.client.bootstrap-osd.keyring"
-        ssh "$node" "chown ceph:ceph /etc/pve/priv/ceph.client.bootstrap-osd.keyring"
-    done
 }
 
 # Function to create and distribute admin keyring
@@ -189,6 +98,34 @@ create_admin_keyring() {
         ssh "$node" "chown ceph:ceph /etc/ceph/ceph.client.admin.keyring"
         ssh "$node" "chmod 600 /etc/ceph/ceph.client.admin.keyring"
     done
+}
+
+# Function to create and distribute bootstrap keyring
+create_bootstrap_keyring() {
+    local nodes=("$@")
+
+    echo -e "${YELLOW}Creating bootstrap-osd keyring...${NC}"
+    ceph-authtool --create-keyring /etc/pve/priv/ceph.client.bootstrap-osd.keyring --gen-key -n client.bootstrap-osd --cap mon 'allow profile bootstrap-osd'
+
+    echo -e "${YELLOW}Distributing bootstrap-osd keyring to nodes...${NC}"
+    for node in "${nodes[@]}"; do
+        scp /etc/pve/priv/ceph.client.bootstrap-osd.keyring "$node:/etc/pve/priv/ceph.client.bootstrap-osd.keyring"
+        ssh "$node" "chown ceph:ceph /etc/pve/priv/ceph.client.bootstrap-osd.keyring"
+    done
+}
+
+# Function to initialize the Ceph cluster
+initialize_ceph_cluster() {
+    local nodes=("$@")
+    local fsid=$1
+    local mon_hosts=$2
+
+    echo -e "${YELLOW}Initializing Ceph cluster...${NC}"
+    cephadm bootstrap --mon-ip "$mon_hosts" --fsid "$fsid"
+
+    echo -e "${YELLOW}Waiting for the cluster to start...${NC}"
+    sleep 10
+    ceph -s
 }
 
 # Function to create OSDs
@@ -378,25 +315,17 @@ for node in "${!node_cluster_ips[@]}"; do
     echo -e "${YELLOW}Setting up $node...${NC}"
     add_ceph_repo "$node"
     install_ceph_packages "$node"
-    configure_ceph "$node"
 done
 
-# Create Ceph configuration
-mon_hosts=$(IFS=" " ; echo "${node_cluster_ips[*]}")
-create_ceph_conf "$fsid" "$cluster_network" "$public_network" "$mon_hosts"
-
-# Distribute ceph.conf to all nodes
-for node in "${!node_cluster_ips[@]}"; do
-    echo -e "${YELLOW}Distributing ceph.conf to $node...${NC}"
-    scp /etc/pve/ceph.conf "$node:/etc/ceph/ceph.conf"
-    ssh "$node" "chown ceph:ceph /etc/ceph/ceph.conf"
-done
+# Create and distribute admin keyring
+create_admin_keyring "${!node_cluster_ips[@]}"
 
 # Create and distribute bootstrap keyring
 create_bootstrap_keyring "${!node_cluster_ips[@]}"
 
-# Create and distribute admin keyring
-create_admin_keyring "${!node_cluster_ips[@]}"
+# Initialize the Ceph cluster
+mon_hosts=$(IFS=" " ; echo "${node_cluster_ips[*]}")
+initialize_ceph_cluster "$fsid" "$mon_hosts"
 
 # Create OSDs
 create_osds "${!node_cluster_ips[@]}"
