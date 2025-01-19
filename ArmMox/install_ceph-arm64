@@ -169,14 +169,23 @@ create_osds() {
         ssh "$node" "lsblk -d -o NAME,SIZE,MODEL"
 
         # Prompt for disk selection
-        disk=$(prompt "Enter the disk to use for OSD (e.g., /dev/sdb):")
+        disk=$(prompt "Enter the disk to use for OSD (e.g., sdb, nvme0n1):")
+        if [[ $disk != /dev/* ]]; then
+            disk="/dev/$disk"
+        fi
+
+        # Validate disk exists
+        if ! ssh "$node" "lsblk $disk" &> /dev/null; then
+            echo -e "${RED}Disk $disk does not exist on $node. Skipping...${NC}"
+            continue
+        fi
 
         # Prompt for disk type (SSD, HDD, NVMe)
         disk_type=$(prompt "Enter disk type (ssd, hdd, nvme):")
 
         # Create OSD with the selected disk and tag
         echo -e "${YELLOW}Creating OSD on $node with disk $disk (type: $disk_type)...${NC}"
-        ssh "$node" "ceph-volume lvm create --data $disk --osd-id-allocator=random"
+        ssh "$node" "ceph-volume lvm create --data $disk"
 
         # Tag the OSD with the disk type
         osd_id=$(ssh "$node" "ceph-volume lvm list --format=json" | jq -r '.[] | select(.devices[] == "'$disk'") | .tags["ceph.osd_id"]')
@@ -243,8 +252,8 @@ EOF
 
     # Distribute configuration to all nodes
     for node in "${nodes[@]}"; do
-        scp /etc/pve/ceph.conf "$node:/etc/pve/ceph.conf"
-        ssh "$node" "rm -f /etc/ceph/ceph.conf && ln -s /etc/pve/ceph.conf /etc/ceph/ceph.conf"
+        scp /etc/pve/ceph.conf "$node:/etc/ceph/ceph.conf"
+        ssh "$node" "chown ceph:ceph /etc/ceph/ceph.conf"
     done
 
     # Start RGW services
@@ -321,6 +330,13 @@ done
 # Create Ceph configuration
 mon_hosts=$(IFS=" " ; echo "${node_cluster_ips[*]}")
 create_ceph_conf "$fsid" "$cluster_network" "$public_network" "$mon_hosts"
+
+# Distribute ceph.conf to all nodes
+for node in "${!node_cluster_ips[@]}"; do
+    echo -e "${YELLOW}Distributing ceph.conf to $node...${NC}"
+    scp /etc/pve/ceph.conf "$node:/etc/ceph/ceph.conf"
+    ssh "$node" "chown ceph:ceph /etc/ceph/ceph.conf"
+done
 
 # Create OSDs
 create_osds "${!node_cluster_ips[@]}"
