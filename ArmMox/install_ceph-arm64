@@ -1,8 +1,21 @@
 #!/bin/bash
 
+# ANSI color codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+MAGENTA='\033[0;35m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+# Ceph version
+ceph_version="19.2.0-pve2"
+
 # Function to prompt for user input
 prompt() {
-    read -p "$1: " input
+    echo -e "${CYAN}$1: ${NC}" >&2
+    read -p "" input
     echo "$input"
 }
 
@@ -32,6 +45,7 @@ validate_cidr() {
 # Function to add Ceph repository
 add_ceph_repo() {
     local host=$1
+    echo -e "${YELLOW}Adding Ceph repository on $host...${NC}"
     ssh "$host" "cat <<EOF | tee /etc/apt/sources.list.d/ceph.list > /dev/null
 deb [arch=arm64] https://mirrors.apqa.cn/proxmox/debian/pve bookworm ceph-squid
 EOF"
@@ -40,16 +54,17 @@ EOF"
 # Function to install Ceph packages
 install_ceph_packages() {
     local host=$1
+    echo -e "${YELLOW}Installing Ceph packages on $host...${NC}"
     ssh "$host" "apt update && apt install -y --reinstall \
-        ceph=19.2.0-pve2 \
-        ceph-common=19.2.0-pve2 \
-        ceph-base=19.2.0-pve2 \
-        ceph-mgr=19.2.0-pve2 \
-        ceph-mds=19.2.0-pve2 \
-        ceph-osd=19.2.0-pve2 \
-        ceph-volume=19.2.0-pve2 \
-        ceph-mon=19.2.0-pve2 \
-        ceph-mgr-dashboard=19.2.0-pve2 \
+        ceph=$ceph_version \
+        ceph-common=$ceph_version \
+        ceph-base=$ceph_version \
+        ceph-mgr=$ceph_version \
+        ceph-mds=$ceph_version \
+        ceph-osd=$ceph_version \
+        ceph-volume=$ceph_version \
+        ceph-mon=$ceph_version \
+        ceph-mgr-dashboard=$ceph_version \
         radosgw \
         python3-pip \
         python3-wheel \
@@ -66,6 +81,7 @@ install_ceph_packages() {
 # Function to configure Ceph
 configure_ceph() {
     local host=$1
+    echo -e "${YELLOW}Configuring Ceph on $host...${NC}"
     ssh "$host" "echo 'PYTHON_PATH=\"/usr/lib/python3/dist-packages\"' >> /etc/default/ceph"
     ssh "$host" "chown -R ceph:ceph /usr/share/ceph/mgr/"
 }
@@ -77,6 +93,7 @@ create_ceph_conf() {
     local public_network=$3
     local mon_hosts=$4
 
+    echo -e "${YELLOW}Creating Ceph configuration...${NC}"
     cat <<EOF > /etc/pve/ceph.conf
 [global]
     auth_client_required = cephx
@@ -145,10 +162,10 @@ create_osds() {
     local nodes=("$@")
 
     for node in "${nodes[@]}"; do
-        echo "Setting up OSD on $node..."
+        echo -e "${YELLOW}Setting up OSD on $node...${NC}"
 
         # List available disks
-        echo "Available disks on $node:"
+        echo -e "${CYAN}Available disks on $node:${NC}"
         ssh "$node" "lsblk -d -o NAME,SIZE,MODEL"
 
         # Prompt for disk selection
@@ -158,21 +175,21 @@ create_osds() {
         disk_type=$(prompt "Enter disk type (ssd, hdd, nvme):")
 
         # Create OSD with the selected disk and tag
-        echo "Creating OSD on $node with disk $disk (type: $disk_type)..."
+        echo -e "${YELLOW}Creating OSD on $node with disk $disk (type: $disk_type)...${NC}"
         ssh "$node" "ceph-volume lvm create --data $disk --osd-id-allocator=random"
 
         # Tag the OSD with the disk type
         osd_id=$(ssh "$node" "ceph-volume lvm list --format=json" | jq -r '.[] | select(.devices[] == "'$disk'") | .tags["ceph.osd_id"]')
         if [[ -n $osd_id ]]; then
-            echo "Tagging OSD $osd_id as $disk_type..."
+            echo -e "${GREEN}Tagging OSD $osd_id as $disk_type...${NC}"
             ceph osd crush set-device-class "$disk_type" "$osd_id"
         else
-            echo "Failed to find OSD ID for disk $disk on $node."
+            echo -e "${RED}Failed to find OSD ID for disk $disk on $node.${NC}"
         fi
     done
 
     # Verify OSDs are up
-    echo "Waiting for OSDs to come up..."
+    echo -e "${YELLOW}Waiting for OSDs to come up...${NC}"
     sleep 10
     ceph osd status
 }
@@ -182,7 +199,7 @@ configure_rgw() {
     local nodes=("$@")
 
     # Create RGW pool
-    echo "Creating RGW pool..."
+    echo -e "${YELLOW}Creating RGW pool...${NC}"
     ceph osd pool create rgw.data 32 32
     ceph osd pool application enable rgw.data rgw
 
@@ -191,14 +208,14 @@ configure_rgw() {
     RGW_secret_key=$(openssl rand -hex 32)
 
     # Create RGW user
-    echo "Creating RGW user..."
+    echo -e "${YELLOW}Creating RGW user...${NC}"
     radosgw-admin user create --uid=s3admin \
         --display-name="S3 Admin" \
         --access-key="$RGW_access_key" \
         --secret-key="$RGW_secret_key"
 
     # Configure RGW in dashboard
-    echo "Configuring RGW in dashboard..."
+    echo -e "${YELLOW}Configuring RGW in dashboard...${NC}"
     ceph config-key set mgr/dashboard/RGW_API_ACCESS_KEY "$RGW_access_key"
     ceph config-key set mgr/dashboard/RGW_API_SECRET_KEY "$RGW_secret_key"
     ceph config-key set mgr/dashboard/RGW_API_SCHEME "https"
@@ -238,24 +255,36 @@ EOF
 }
 
 # Main script execution
-echo "Ceph Cluster Setup Script"
+echo -e "${GREEN}Ceph Cluster Setup Script${NC}"
 
-# Prompt for node names and IPs
-declare -A node_ips
+# Prompt for node names, cluster IPs, and public IPs
+declare -A node_cluster_ips
+declare -A node_public_ips
+node_count=1
 while true; do
-    node=$(prompt "Enter node name (or 'done' to finish)")
+    node=$(prompt "Enter node $node_count name (or 'done' to finish)")
     if [[ $node == "done" ]]; then
         break
     fi
     while true; do
-        ip=$(prompt "Enter IP address for $node")
-        if validate_ip "$ip"; then
-            node_ips["$node"]="$ip"
+        cluster_ip=$(prompt "Enter cluster IP address for $node")
+        if validate_ip "$cluster_ip"; then
+            node_cluster_ips["$node"]="$cluster_ip"
             break
         else
-            echo "Invalid IP address. Please try again."
+            echo -e "${RED}Invalid cluster IP address. Please try again.${NC}"
         fi
     done
+    while true; do
+        public_ip=$(prompt "Enter public IP address for $node")
+        if validate_ip "$public_ip"; then
+            node_public_ips["$node"]="$public_ip"
+            break
+        else
+            echo -e "${RED}Invalid public IP address. Please try again.${NC}"
+        fi
+    done
+    node_count=$((node_count + 1))
 done
 
 # Prompt for cluster and public networks
@@ -264,7 +293,7 @@ while true; do
     if validate_cidr "$cluster_network"; then
         break
     else
-        echo "Invalid CIDR format. Please try again."
+        echo -e "${RED}Invalid CIDR format. Please try again.${NC}"
     fi
 done
 
@@ -273,30 +302,30 @@ while true; do
     if validate_cidr "$public_network"; then
         break
     else
-        echo "Invalid CIDR format. Please try again."
+        echo -e "${RED}Invalid CIDR format. Please try again.${NC}"
     fi
 done
 
 # Generate FSID
 fsid=$(generate_fsid)
-echo "Generated FSID: $fsid"
+echo -e "${GREEN}Generated FSID: $fsid${NC}"
 
 # Add Ceph repository and install packages
-for node in "${!node_ips[@]}"; do
-    echo "Setting up $node..."
+for node in "${!node_cluster_ips[@]}"; do
+    echo -e "${YELLOW}Setting up $node...${NC}"
     add_ceph_repo "$node"
     install_ceph_packages "$node"
     configure_ceph "$node"
 done
 
 # Create Ceph configuration
-mon_hosts=$(IFS=" " ; echo "${node_ips[*]}")
+mon_hosts=$(IFS=" " ; echo "${node_cluster_ips[*]}")
 create_ceph_conf "$fsid" "$cluster_network" "$public_network" "$mon_hosts"
 
 # Create OSDs
-create_osds "${!node_ips[@]}"
+create_osds "${!node_cluster_ips[@]}"
 
 # Configure RGW
-configure_rgw "${!node_ips[@]}"
+configure_rgw "${!node_cluster_ips[@]}"
 
-echo "Ceph cluster setup completed!"
+echo -e "${GREEN}Ceph cluster setup completed!${NC}"
