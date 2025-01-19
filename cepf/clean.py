@@ -1,111 +1,69 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import time
 import subprocess
-from colorama import Fore, Style, init
 from shutil import get_terminal_size
 
-# Initialize colorama
-init()
-
-# Color definitions
-bold = Style.BRIGHT
-dim = Style.DIM
-reverse = "\033[7m"
-hidden = "\033[8m"
-normal = Style.RESET_ALL
-blue = Fore.BLUE
-red = Fore.RED
-green = Fore.GREEN
-orange = "\033[38;5;202m"
-lightblue = "\033[94m"
-lightyellow = "\033[38;5;184m"
-lightpurple = "\033[38;5;135m"
-lightaqua = "\033[96m"
-white = Fore.WHITE
-default = "\033[39m"
-YW = "\033[33m"
-BL = "\033[36m"
-RD = "\033[01;31m"
-BGN = "\033[4;92m"
-GN = "\033[1;92m"
-DGN = "\033[32m"
-CL = "\033[m"
-CM = f"{GN}✓{CL}"
-CROSS = f"{RD}✗{CL}"
-BFR = "\r\033[K"
-HOLD = "-"
-underline = "\033[4m"
+# Native ANSI color codes
+class Colors:
+    BOLD = "\033[1m"
+    DIM = "\033[2m"
+    REVERSE = "\033[7m"
+    HIDDEN = "\033[8m"
+    RESET = "\033[0m"
+    BLUE = "\033[34m"
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    ORANGE = "\033[38;5;202m"
+    LIGHTBLUE = "\033[94m"
+    LIGHTYELLOW = "\033[38;5;184m"
+    LIGHTPURPLE = "\033[38;5;135m"
+    LIGHTAQUA = "\033[96m"
+    WHITE = "\033[97m"
+    YELLOW = "\033[33m"
+    UNDERLINE = "\033[4m"
 
 # Links
 def show_links():
-    print(f"{green}    Links: {normal}")
-    print(f"{orange}    ====== {normal}")
-    print(f"{lightblue}{bold}    Support:        {green}https://github.com/Telxey/Proxmox/issues {normal}")
-    print(f"{lightblue}{bold}    Repository:     {green}https://github.com/Telxey/Proxmox {normal}")
-    print(f"{lightblue}{bold}    License:        {green}https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE {normal}")
+    print(f"{Colors.GREEN}    Links: {Colors.RESET}")
+    print(f"{Colors.ORANGE}    ====== {Colors.RESET}")
+    print(f"{Colors.LIGHTBLUE}{Colors.BOLD}    Support:        {Colors.GREEN}https://github.com/Telxey/Proxmox/issues {Colors.RESET}")
+    print(f"{Colors.LIGHTBLUE}{Colors.BOLD}    Repository:     {Colors.GREEN}https://github.com/Telxey/Proxmox {Colors.RESET}")
+    print(f"{Colors.LIGHTBLUE}{Colors.BOLD}    License:        {Colors.GREEN}https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE {Colors.RESET}")
 
 # Progress bar function
 def progress_bar(duration):
     cols = get_terminal_size().columns - 10
     for i in range(1, duration + 1):
         progress = i * cols // duration
-        print(f"\r[{orange}{'▇' * progress}{' ' * (cols - progress)}{normal}] {i * 100 // duration}%", end="")
+        print(f"\r[{Colors.ORANGE}{'▇' * progress}{' ' * (cols - progress)}{Colors.RESET}] {i * 100 // duration}%", end="")
         time.sleep(0.1)
     print()
 
-# Interactive spinner
-def spinner(pid):
-    spinstr = '|/-\\'
-    while True:
-        for char in spinstr:
-            print(f"  [{char}]  ", end="\r")
-            time.sleep(0.1)
-        if not os.path.exists(f"/proc/{pid}"):
-            break
-    print("    \b\b\b\b", end="")
-
-# Execute command with spinner
-def exec_with_spinner(cmd, msg):
-    msg_info(msg)
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    spinner(process.pid)
-    if process.wait() == 0:
-        msg_ok(f"{msg} completed")
-    else:
-        msg_error(f"{msg} failed")
-
 # Message functions
 def msg_info(msg):
-    print(f" {HOLD} {YW}{msg}...{CL}", end="")
+    print(f" - {Colors.YELLOW}{msg}...{Colors.RESET}", end="")
 
 def msg_ok(msg):
-    print(f"{BFR} {CM} {GN}{msg}{CL}")
+    print(f"\r {Colors.GREEN}✓ {msg}{Colors.RESET}")
 
 def msg_error(msg):
-    print(f"{BFR} {CROSS} {RD}{msg}{CL}")
-
-# Execute command with progress
-def exec_with_progress(cmd, msg):
-    msg_info(msg)
-    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    progress_bar(20)
-    if process.wait() == 0:
-        msg_ok(f"{msg} completed")
-    else:
-        msg_error(f"{msg} failed")
+    print(f"\r {Colors.RED}✗ {msg}{Colors.RESET}")
 
 # Banner functions
 def show_banner(text, color, textcolor=None):
     textcolor = textcolor or color
     width = 60
     padding = (width - len(text)) // 2
-    print(f"{color}{bold}")
+    print(f"{color}{Colors.BOLD}")
     print("=" * width)
     print(" " * padding + f"{textcolor}{text}{color}")
     print("=" * width)
-    print(f"{normal}")
+    print(f"{Colors.RESET}")
 
+# Warning banner
 def show_warning_banner():
     banner = """
      ██╗    ██╗ █████╗ ██████╗ ███╗   ██╗██╗███╗   ██╗ ██████╗ 
@@ -117,21 +75,22 @@ def show_warning_banner():
 
     for _ in range(7):
         os.system("clear")
-        print(f"{red}{bold}{banner}{normal}")
+        print(f"{Colors.RED}{Colors.BOLD}{banner}{Colors.RESET}")
         time.sleep(0.5)
         os.system("clear")
         time.sleep(0.5)
 
-    print(f"{red}{bold}{banner}{normal}")
+    print(f"{Colors.RED}{Colors.BOLD}{banner}{Colors.RESET}")
     print("""
     ⚠️  WARNING: This will completely remove your Ceph installation
     All Ceph storage and configuration will be permanently deleted
     Please ensure you have backups before continuing
     """)
-    print(f"{normal}")
+    print(f"{Colors.RESET}")
 
+# Ceph banner
 def show_ceph_banner():
-    print(f"{orange}")
+    print(f"{Colors.ORANGE}")
     print("""
  ▄████▄  ▓█████ ██▓███   ▒ ████▒     ▄████▄   ██▓    ▓█████ ▄▄▄      ███▄    █  ▓█████ ██▀███  
 ▒██▀ ▀█  ▓█   ▀▓██░  ██ ▒▓██        ▒██▀ ▀█  ▓██▒    ▓█   ▀▒████▄    ██ ▀█   █  ▓█   ▀▓██ ▒ ██▒
@@ -143,12 +102,11 @@ def show_ceph_banner():
 ░           ░  ░░         ░ ░       ░          ░ ░      ░    ░   ▒     ░   ░ ░     ░    ░░   ░ 
 ░ ░     ░   ░                       ░ ░     ░    ░  ░   ░        ░           ░ ░   ░     ░     
     """)
-    print(f"{normal}")
+    print(f"{Colors.RESET}")
 
 # Check root
 def check_root():
     if os.geteuid() != 0:
-        clear()
         msg_error("Please run this script as root.")
         print("\nExiting...")
         time.sleep(2)
@@ -170,101 +128,71 @@ def pve_check():
         msg_error("Failed to check Proxmox version")
         sys.exit(1)
 
-# Info
-def show_outro():
-    print(f"{white}{bold}")
-    print("""
-       Thank you for trying this script out.
-    """)
-    print(f"{normal}")
-    time.sleep(5)
-
-# Support Project
-def show_support():
-    print(f"{orange}{bold}")
-    print("""
-   Support the Project:
-   ==========================================
-    """)
-    print(f"{normal}{dim}")
-    print("""
-           🔗 Buy Me a Coffee: https://www.buymeacoffee.com/telxey
-    """)
-    print(f"{normal}")
-
 # Main cleanup function
 def cleanup_ceph():
     # Stop services
-    show_banner("Step 1: Stopping Ceph Services", lightblue, orange)
+    show_banner("Step 1: Stopping Ceph Services", Colors.LIGHTBLUE, Colors.ORANGE)
     for service in ["ceph-mon", "ceph-mgr", "ceph-mds", "ceph-osd"]:
-        exec_with_spinner(f"systemctl stop {service}.target", f"Stopping {service}")
+        msg_info(f"Stopping {service}")
+        try:
+            subprocess.run(["systemctl", "stop", f"{service}.target"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            msg_ok(f"Stopped {service}")
+        except subprocess.CalledProcessError:
+            msg_error(f"Failed to stop {service}")
 
     # Remove systemd files
-    show_banner("Step 2: Removing Systemd Files", lightblue, orange)
-    exec_with_spinner("rm -rf /etc/systemd/system/ceph*", "Removing systemd files")
-    exec_with_spinner("systemctl daemon-reload", "Reloading systemd")
+    show_banner("Step 2: Removing Systemd Files", Colors.LIGHTBLUE, Colors.ORANGE)
+    msg_info("Removing systemd files")
+    try:
+        subprocess.run(["rm", "-rf", "/etc/systemd/system/ceph*"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(["systemctl", "daemon-reload"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        msg_ok("Systemd files removed")
+    except subprocess.CalledProcessError:
+        msg_error("Failed to remove systemd files")
 
     # Remove libraries
-    show_banner("Step 3: Removing Ceph Libraries", blue, orange)
-    exec_with_spinner("rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/ /var/lib/ceph/crash/posted/*(N)", "Removing Ceph libraries")
+    show_banner("Step 3: Removing Ceph Libraries", Colors.BLUE, Colors.ORANGE)
+    msg_info("Removing Ceph libraries")
+    try:
+        subprocess.run(["rm", "-rf", "/var/lib/ceph/mon/", "/var/lib/ceph/mgr/", "/var/lib/ceph/mds/", "/var/lib/ceph/crash/posted/*"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        msg_ok("Ceph libraries removed")
+    except subprocess.CalledProcessError:
+        msg_error("Failed to remove Ceph libraries")
 
     # Purge packages
-    show_banner("Step 4: Purging Ceph Packages", blue, orange)
-    exec_with_spinner("pveceph purge", "Purging pveCeph")
-    exec_with_spinner("DEBIAN_FRONTEND=noninteractive apt-get purge -y ceph-mon ceph-osd ceph-mgr ceph-mds ceph-base ceph-mgr-modules-core", "Purging Ceph packages")
-    exec_with_spinner("DEBIAN_FRONTEND=noninteractive apt-get remove -y ceph-common ceph-fuse", "Removing Ceph components")
+    show_banner("Step 4: Purging Ceph Packages", Colors.BLUE, Colors.ORANGE)
+    msg_info("Purging pveCeph")
+    try:
+        subprocess.run(["pveceph", "purge"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        msg_ok("pveCeph purged")
+    except subprocess.CalledProcessError:
+        msg_error("Failed to purge pveCeph")
 
     # Remove configs
-    show_banner("Step 5: Removing Configurations", blue, orange)
-    exec_with_spinner("rm -rf /etc/ceph/* /etc/pve/ceph.conf /etc/pve/priv/ceph.*", "Removing configurations")
+    show_banner("Step 5: Removing Configurations", Colors.BLUE, Colors.ORANGE)
+    msg_info("Removing configurations")
+    try:
+        subprocess.run(["rm", "-rf", "/etc/ceph/*", "/etc/pve/ceph.conf", "/etc/pve/priv/ceph.*"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        msg_ok("Configurations removed")
+    except subprocess.CalledProcessError:
+        msg_error("Failed to remove configurations")
 
     # System cleanup
-    show_banner("Step 6: System Cleanup", blue, orange)
-    exec_with_spinner("DEBIAN_FRONTEND=noninteractive apt-get autoremove -y", "Running autoremove")
-    exec_with_spinner("DEBIAN_FRONTEND=noninteractive apt-get clean", "Cleaning apt cache")
-    exec_with_spinner("DEBIAN_FRONTEND=noninteractive apt-get autoclean", "Auto-cleaning packages")
-    exec_with_spinner("DEBIAN_FRONTEND=noninteractive apt-get update", "Updating package lists")
+    show_banner("Step 6: System Cleanup", Colors.BLUE, Colors.ORANGE)
+    msg_info("Running autoremove")
+    try:
+        subprocess.run(["apt-get", "autoremove", "-y"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        msg_ok("Autoremove completed")
+    except subprocess.CalledProcessError:
+        msg_error("Failed to run autoremove")
 
-    show_banner("Ceph Cleanup Complete!", green, lightyellow)
+    show_banner("Ceph Cleanup Complete!", Colors.GREEN, Colors.LIGHTYELLOW)
 
 # Main execution
 if __name__ == "__main__":
-    os.system("clear")
-    msg_info("Checking root")
-    time.sleep(5)
     check_root()
-    msg_ok("Good to GO ...")
-    time.sleep(5)
-
-    os.system("clear")
-    show_warning_banner()
-
-    print(f"{orange}{bold}Do you wish to continue removing Ceph?")
-    print(f"{green}For continue press 1 {white}{bold} or {red}For cancel press 2 {normal}")
-    choice = input("Enter your choice (1 or 2): ")
-    if choice != "1":
-        print(f"{red}Installation canceled{normal}")
-        sys.exit(0)
-
-    os.system("clear")
-    show_ceph_banner()
-    print(f"{dim}{white}Author: {green}{bold}TELXEY{normal}\n")
-    print(f"{lightyellow}Hello{green} Today is: {lightpurple}{time.strftime('%a %b %-d %I:%M:%S %p %Z %Y')}{normal}\n")
-    print(f"{underline}\n")
-    print(f"{normal}")
-
-    print(f"{green}            Start Cleaning {orange}Ceph")
-    print(f"{normal}")
-
-    msg_info("Checking Proxmox Installations")
     pve_check()
-    msg_ok("Proxmox is running")
-    msg_info("Loading Script")
-    msg_ok("Script loaded")
-
+    show_warning_banner()
+    show_ceph_banner()
     cleanup_ceph()
-    show_outro()
     show_links()
-    show_support()
-
-    print(f"\n{green}{bold}Cleanup completed successfully!{normal}")
