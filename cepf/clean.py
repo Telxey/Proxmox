@@ -9,20 +9,17 @@ from shutil import get_terminal_size
 # Native ANSI color codes
 class Colors:
     BOLD = "\033[1m"
-    DIM = "\033[2m"
-    REVERSE = "\033[7m"
-    HIDDEN = "\033[8m"
     RESET = "\033[0m"
-    BLUE = "\033[34m"
     RED = "\033[31m"
     GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[34m"
     ORANGE = "\033[38;5;202m"
     LIGHTBLUE = "\033[94m"
     LIGHTYELLOW = "\033[38;5;184m"
     LIGHTPURPLE = "\033[38;5;135m"
     LIGHTAQUA = "\033[96m"
     WHITE = "\033[97m"
-    YELLOW = "\033[33m"
     UNDERLINE = "\033[4m"
 
 # Links
@@ -33,7 +30,7 @@ def show_links():
     print(f"{Colors.LIGHTBLUE}{Colors.BOLD}    Repository:     {Colors.GREEN}https://github.com/Telxey/Proxmox {Colors.RESET}")
     print(f"{Colors.LIGHTBLUE}{Colors.BOLD}    License:        {Colors.GREEN}https://raw.githubusercontent.com/Telxey/Proxmox/main/LICENSE {Colors.RESET}")
 
-# Progress bar function
+# Progress bar
 def progress_bar(duration):
     cols = get_terminal_size().columns - 10
     for i in range(1, duration + 1):
@@ -42,17 +39,25 @@ def progress_bar(duration):
         time.sleep(0.1)
     print()
 
-# Message functions
-def msg_info(msg):
-    print(f" - {Colors.YELLOW}{msg}...{Colors.RESET}", end="")
+# Spinner
+def spinner(pid, msg):
+    spin_chars = "|/-\\"
+    while True:
+        for char in spin_chars:
+            print(f"\r{Colors.YELLOW}{char} {msg}{Colors.RESET}", end="")
+            time.sleep(0.1)
+        if not os.path.exists(f"/proc/{pid}"):
+            break
+    print(f"\r{Colors.GREEN}✓ {msg} completed{Colors.RESET}")
 
-def msg_ok(msg):
-    print(f"\r {Colors.GREEN}✓ {msg}{Colors.RESET}")
+# Execute command with spinner
+def exec_with_spinner(cmd, msg):
+    process = subprocess.Popen(cmd, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    spinner(process.pid, msg)
+    if process.wait() != 0:
+        print(f"\r{Colors.RED}✗ {msg} failed{Colors.RESET}")
 
-def msg_error(msg):
-    print(f"\r {Colors.RED}✗ {msg}{Colors.RESET}")
-
-# Banner functions
+# Banner
 def show_banner(text, color, textcolor=None):
     textcolor = textcolor or color
     width = 60
@@ -107,7 +112,7 @@ def show_ceph_banner():
 # Check root
 def check_root():
     if os.geteuid() != 0:
-        msg_error("Please run this script as root.")
+        print(f"{Colors.RED}✗ Please run this script as root.{Colors.RESET}")
         print("\nExiting...")
         time.sleep(2)
         sys.exit(1)
@@ -119,77 +124,47 @@ def pve_check():
         if "pve-manager/8" not in pveversion:
             print("Proxmox VE 7 Detected: You are currently using Proxmox VE 7 (EOL 2024-07), refrain from creating Debian 12 LXCs.")
         if not ("pve-manager/7." in pveversion or "pve-manager/8." in pveversion):
-            msg_error("This version of Proxmox Virtual Environment is not supported")
+            print(f"{Colors.RED}✗ This version of Proxmox Virtual Environment is not supported{Colors.RESET}")
             print("Requires PVE Version 7.0 or higher")
             print("Exiting...")
             time.sleep(2)
             sys.exit(1)
     except subprocess.CalledProcessError:
-        msg_error("Failed to check Proxmox version")
+        print(f"{Colors.RED}✗ Failed to check Proxmox version{Colors.RESET}")
         sys.exit(1)
-
-# Execute command with timeout
-def run_command(cmd, timeout=30):
-    try:
-        subprocess.run(cmd, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=timeout)
-        return True
-    except subprocess.TimeoutExpired:
-        msg_error(f"Command timed out: {' '.join(cmd)}")
-        return False
-    except subprocess.CalledProcessError:
-        msg_error(f"Command failed: {' '.join(cmd)}")
-        return False
 
 # Main cleanup function
 def cleanup_ceph():
     # Stop services
     show_banner("Step 1: Stopping Ceph Services", Colors.LIGHTBLUE, Colors.ORANGE)
     for service in ["ceph-mon", "ceph-mgr", "ceph-mds", "ceph-osd"]:
-        msg_info(f"Stopping {service}")
-        if run_command(["systemctl", "stop", f"{service}.target"]):
-            msg_ok(f"Stopped {service}")
-        else:
-            msg_error(f"Failed to stop {service}")
+        exec_with_spinner(f"systemctl stop {service}.target", f"Stopping {service}")
 
     # Remove systemd files
     show_banner("Step 2: Removing Systemd Files", Colors.LIGHTBLUE, Colors.ORANGE)
-    msg_info("Removing systemd files")
-    if run_command(["rm", "-rf", "/etc/systemd/system/ceph*"]) and run_command(["systemctl", "daemon-reload"]):
-        msg_ok("Systemd files removed")
-    else:
-        msg_error("Failed to remove systemd files")
+    exec_with_spinner("rm -rf /etc/systemd/system/ceph*", "Removing systemd files")
+    exec_with_spinner("systemctl daemon-reload", "Reloading systemd")
 
     # Remove libraries
     show_banner("Step 3: Removing Ceph Libraries", Colors.BLUE, Colors.ORANGE)
-    msg_info("Removing Ceph libraries")
-    if run_command(["rm", "-rf", "/var/lib/ceph/mon/", "/var/lib/ceph/mgr/", "/var/lib/ceph/mds/", "/var/lib/ceph/crash/posted/*"]):
-        msg_ok("Ceph libraries removed")
-    else:
-        msg_error("Failed to remove Ceph libraries")
+    exec_with_spinner("rm -rf /var/lib/ceph/mon/ /var/lib/ceph/mgr/ /var/lib/ceph/mds/ /var/lib/ceph/crash/posted/*", "Removing Ceph libraries")
 
     # Purge packages
     show_banner("Step 4: Purging Ceph Packages", Colors.BLUE, Colors.ORANGE)
-    msg_info("Purging pveCeph")
-    if run_command(["pveceph", "purge"]):
-        msg_ok("pveCeph purged")
-    else:
-        msg_error("Failed to purge pveCeph")
+    exec_with_spinner("pveceph purge", "Purging pveCeph")
+    exec_with_spinner("apt-get purge -y ceph-mon ceph-osd ceph-mgr ceph-mds ceph-base ceph-mgr-modules-core", "Purging Ceph packages")
+    exec_with_spinner("apt-get remove -y ceph-common ceph-fuse", "Removing Ceph components")
 
     # Remove configs
     show_banner("Step 5: Removing Configurations", Colors.BLUE, Colors.ORANGE)
-    msg_info("Removing configurations")
-    if run_command(["rm", "-rf", "/etc/ceph/*", "/etc/pve/ceph.conf", "/etc/pve/priv/ceph.*"]):
-        msg_ok("Configurations removed")
-    else:
-        msg_error("Failed to remove configurations")
+    exec_with_spinner("rm -rf /etc/ceph/* /etc/pve/ceph.conf /etc/pve/priv/ceph.*", "Removing configurations")
 
     # System cleanup
     show_banner("Step 6: System Cleanup", Colors.BLUE, Colors.ORANGE)
-    msg_info("Running autoremove")
-    if run_command(["apt-get", "autoremove", "-y"]):
-        msg_ok("Autoremove completed")
-    else:
-        msg_error("Failed to run autoremove")
+    exec_with_spinner("apt-get autoremove -y", "Running autoremove")
+    exec_with_spinner("apt-get clean", "Cleaning apt cache")
+    exec_with_spinner("apt-get autoclean", "Auto-cleaning packages")
+    exec_with_spinner("apt-get update", "Updating package lists")
 
     show_banner("Ceph Cleanup Complete!", Colors.GREEN, Colors.LIGHTYELLOW)
 
