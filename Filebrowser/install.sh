@@ -72,14 +72,14 @@ apt-get install -y curl &>/dev/null
 curl -fsSL https://raw.githubusercontent.com/filebrowser/get/master/get.sh | bash
 
 if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
-  filebrowser config init -a '0.0.0.0' --port 80808 &>/dev/null
-  filebrowser config set -a '0.0.0.0' --port 80808 &>/dev/null
+  filebrowser config init -a '0.0.0.0' --port 28080 &>/dev/null
+  filebrowser config set -a '0.0.0.0' --port 28080 &>/dev/null
   filebrowser config init --auth.method=noauth &>/dev/null
   filebrowser config set --auth.method=noauth &>/dev/null
   filebrowser users add ID 1 --perm.admin &>/dev/null  
 else
-  filebrowser config init -a '0.0.0.0' --port 80808 &>/dev/null
-  filebrowser config set -a '0.0.0.0' --port 80808 &>/dev/null
+  filebrowser config init -a '0.0.0.0' --port 28080 &>/dev/null
+  filebrowser config set -a '0.0.0.0' --port 28080 &>/dev/null
   filebrowser users add admin admin --perm.admin &>/dev/null
 fi
 msg_ok "Installed ${APP} on $hostname"
@@ -93,7 +93,7 @@ After=network-online.target
 [Service]
 User=root
 WorkingDirectory=/root/
-ExecStart=/usr/local/bin/filebrowser -r / --port 80808
+ExecStart=/usr/local/bin/filebrowser -r / --port 28080
 
 [Install]
 WantedBy=default.target
