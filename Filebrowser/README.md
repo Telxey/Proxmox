@@ -5,7 +5,7 @@
 #### To run on default port ( IP:8080 )
 
     bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/Filebrowser/install)"
-#### To run in custom port ( IP:80808 )  
+#### To run in custom port ( IP:28080 )  
 
     bash -c "$(wget -qLO - https://github.com/Telxey/Proxmox/raw/main/Filebrowser/install.sh)"
 
