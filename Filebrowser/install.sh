@@ -104,4 +104,4 @@ msg_ok "Created Service"
 
 msg_ok "Completed Successfully!\n"
 echo -e "${APP} should be reachable by going to the following URL.
-         ${BL}$IP:80808${CL} \n"
+         ${BL}$IP:28080${CL} \n"
