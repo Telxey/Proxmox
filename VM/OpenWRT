@@ -430,10 +430,10 @@ msg_info "Getting URL for OpenWrt Disk Image"
 
 echo "- Getting latest available OpenWrt version from mirror..."
 
-# Obtener la última versión publicada del mirror oficial
-stableversion=$(curl -s https://downloads.openwrt.org/releases/ | grep -oP '[0-9]+\.[0-9]+(\.[0-9]+)?/' | sort -V | tail -n1 | tr -d '/')
+## Obtener la última versión completa (incluyendo .1, .2, etc.)
+stableversion=$(curl -s https://downloads.openwrt.org/releases/ | grep -oP '[0-9]+\.[0-9]+\.[0-9]+/' | sort -V | tail -n1 | tr -d '/')
 
-echo "✓ Latest version detected: $stableversion"
+echo "✓ Latest full version detected: $stableversion"
 
 # Construir URL
 URL="https://downloads.openwrt.org/releases/$stableversion/targets/x86/64/openwrt-${stableversion}-x86-64-generic-ext4-combined.img.gz"
