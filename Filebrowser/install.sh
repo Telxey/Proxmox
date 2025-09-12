@@ -104,4 +104,7 @@ msg_ok "Created Service"
 
 msg_ok "Completed Successfully!\n"
 echo -e "${APP} should be reachable by going to the following URL.
+         ${BL}Hostname:${CL)"$(hostname) \n"
          ${BL}$IP:28080${CL} \n"
+         ${YW}Default User: ${GN}admin ${CL} \n"
+         ${YW}Default Password: ${RD}@Dmin123 ${CL} \n"
