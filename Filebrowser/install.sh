@@ -80,7 +80,7 @@ if [[ "${prompt,,}" =~ ^(y|yes)$ ]]; then
 else
   filebrowser config init -a '0.0.0.0' --port 28080 &>/dev/null
   filebrowser config set -a '0.0.0.0' --port 28080 &>/dev/null
-  filebrowser users add admin admin --perm.admin &>/dev/null
+  filebrowser users add admin @Dmin123 --perm.admin &>/dev/null
 fi
 msg_ok "Installed ${APP} on $hostname"
 
